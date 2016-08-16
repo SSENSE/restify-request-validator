@@ -1,0 +1,69 @@
+{
+  "name": "@ssense/restify-request-validator",
+  "version": "1.0.0",
+  "description": "Restify requests validator",
+  "main": "js/index.js",
+  "scripts": {
+    "postinstall": "./node_modules/.bin/typings install",
+    "compile": "rm -rf js/* && ./node_modules/.bin/tsc",
+    "lint": "./node_modules/.bin/tslint ./ts/*.ts ./tests/*.ts --format verbose",
+    "test": "./node_modules/.bin/mocha tests/unit --recursive --compilers ts:ts-node/register --bail",
+    "cover": "./node_modules/.bin/nyc --report-dir tests/coverage/ npm run test"
+  },
+  "keywords": [
+    "restify",
+    "request",
+    "validator",
+    "input"
+  ],
+  "author": "Rémy Jeancolas <remy.jeancolas@ssense.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@ssense/tslint-config": "^1.0.1",
+    "chai": "^3.5.0",
+    "mocha": "^3.0.2",
+    "nyc": "^8.1.0",
+    "pre-commit": "^1.1.3",
+    "ts-node": "^1.2.2",
+    "tslint": "^3.14.0",
+    "typescript": "^1.8.10",
+    "typings": "^1.3.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Groupe-Atallah/restify-request-validator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Groupe-Atallah/restify-request-validator/issues"
+  },
+  "homepage": "https://github.com/Groupe-Atallah/restify-request-validator#readme",
+  "engines": {
+    "node": ">= 6.2.0",
+    "npm": ">= 3"
+  },
+  "pre-commit": [
+    "lint",
+    "test"
+  ],
+  "nyc": {
+    "include": [
+      "ts/*.ts"
+    ],
+    "exclude": [
+      "typings",
+      "node_modules",
+      "ts/index.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "json",
+      "html",
+      "text-summary"
+    ]
+  }
+}

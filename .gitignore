@@ -1,0 +1,5 @@
+node_modules/
+typings/
+.idea/
+.nyc_output/
+npm-debug.log
