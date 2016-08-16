@@ -9,7 +9,7 @@ Simple restify middleware which adds validation for all incoming requests.
 To install the validator for use in your project, go to your project's main directory, then run the following command:
 
 ```
-npm install --production --save restify-request-validator
+npm install --production --save @ssense/restify-request-validator
 ```
 
 ### Usage
@@ -22,7 +22,7 @@ To add the middleware to your current restify project, follow the snippet below:
 
 ```js
 // Require module
-var restifyValidation = require('restify-request-validator');
+var restifyValidation = require('@ssense/restify-request-validator');
 ...
 // Create restify server
 var server = restify.createServer();
@@ -46,7 +46,7 @@ With this configuration, on each validation error, the `RequestValidator` will t
 
 ```js
 // Import module
-import {RequestValidator} from 'restify-request-validator';
+import {RequestValidator} from '@ssense/restify-request-validator';
 ...
 // Create restify server
 const server = restify.createServer();
