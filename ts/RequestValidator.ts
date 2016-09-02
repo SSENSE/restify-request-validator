@@ -1,6 +1,6 @@
 import {ParamValidation} from './ParamValidation';
 
-const supportedTypes = ['string', 'number', 'boolean', 'numeric', 'array'];
+const supportedTypes = ['string', 'number', 'boolean', 'numeric', 'array', 'object'];
 const supportedArrayTypes = ['string', 'number', 'boolean', 'numeric'];
 
 // tslint:disable:no-reserved-keywords no-any

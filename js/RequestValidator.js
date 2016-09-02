@@ -1,6 +1,6 @@
 "use strict";
 var ParamValidation_1 = require('./ParamValidation');
-var supportedTypes = ['string', 'number', 'boolean', 'numeric', 'array'];
+var supportedTypes = ['string', 'number', 'boolean', 'numeric', 'array', 'object'];
 var supportedArrayTypes = ['string', 'number', 'boolean', 'numeric'];
 var RequestValidator = (function () {
     function RequestValidator(errorHandler) {

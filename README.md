@@ -102,7 +102,7 @@ To validate inputs, just add properties to `url`, `query`, and/or `body` params 
 validation: {
     <url/query/body>: {
         <property_name>: {
-            type: 'valid type', // required field, supported types are 'string', 'number', 'boolean', 'numeric', 'array'
+            type: 'valid type', // required field, supported types are 'string', 'number', 'boolean', 'numeric', 'array', 'object'
             required: true|false, // optional, default false, determines is the parameter is required,
             min: 1, // optional, default 1, if 'type' property is 'string' or 'array', determines the minimum length, if 'type' parameter is 'number', determines the minimum value
             max: 5, // optional, default null, if 'type' property is 'string' or 'array', determines the maximum length, if 'type' parameter is 'number', determines the maximum value
