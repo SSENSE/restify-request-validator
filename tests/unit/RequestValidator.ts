@@ -25,7 +25,7 @@ describe('RequestValidator', () => {
     });
 
     it('RequestValidator::validate() required', () => {
-        expected = 'url: Param id is required';
+        expected = 'Url: Param id is required';
         validator.validate({
             route: {
                 validation: {
@@ -40,7 +40,7 @@ describe('RequestValidator', () => {
     });
 
     it('RequestValidator::validate() type', () => {
-        expected = 'url: Param id has invalid type (number)';
+        expected = 'Url: Param id has invalid type (number)';
         validator.validate({
             route: {
                 validation: {
@@ -67,7 +67,7 @@ describe('RequestValidator', () => {
             }
         }, null, test);
 
-        expected = 'url: Param categories has invalid content type (number[])';
+        expected = 'Url: Param categories has invalid content type (number[])';
         validator.validate({
             route: {
                 validation: {
@@ -82,7 +82,7 @@ describe('RequestValidator', () => {
             }
         }, null, test);
 
-        expected = 'body: Param categories must have a minimum length of 1';
+        expected = 'Body: Param categories must have a minimum length of 1';
         validator.validate({
             route: {
                 validation: {
@@ -97,7 +97,7 @@ describe('RequestValidator', () => {
     });
 
     it('RequestValidator::validate() min', () => {
-        expected = 'query: Param id must have a minimum length of 2';
+        expected = 'Query: Param id must have a minimum length of 2';
         validator.validate({
             route: {
                 validation: {
@@ -110,7 +110,7 @@ describe('RequestValidator', () => {
             }
         }, null, test);
 
-        expected = 'query: Param name must have a minimum length of 4';
+        expected = 'Query: Param name must have a minimum length of 4';
         validator.validate({
             route: {
                 validation: {
@@ -138,7 +138,7 @@ describe('RequestValidator', () => {
     });
 
     it('RequestValidator::validate() max', () => {
-        expected = 'query: Param id must have a maximum length of 2';
+        expected = 'Query: Param id must have a maximum length of 2';
         validator.validate({
             route: {
                 validation: {
@@ -152,7 +152,7 @@ describe('RequestValidator', () => {
             }
         }, null, test);
 
-        expected = 'query: Param name must have a maximum length of 2';
+        expected = 'Query: Param name must have a maximum length of 2';
         validator.validate({
             route: {
                 validation: {
@@ -171,7 +171,7 @@ describe('RequestValidator', () => {
     });
 
     it('RequestValidator::validate() length', () => {
-        expected = 'query: Param designers must have a length of 2';
+        expected = 'Query: Param designers must have a length of 2';
         validator.validate({
             route: {
                 validation: {
@@ -193,7 +193,7 @@ describe('RequestValidator', () => {
     });
 
     it('RequestValidator::validate() values', () => {
-        expected = 'query: Param gender must belong to [men,women]';
+        expected = 'Query: Param gender must belong to [men,women]';
         validator.validate({
             route: {
                 validation: {
@@ -208,7 +208,7 @@ describe('RequestValidator', () => {
             }
         }, null, test);
 
-        expected = 'query: Param with must belong to [men,women]';
+        expected = 'Query: Param with must belong to [men,women]';
         validator.validate({
             route: {
                 validation: {
@@ -223,7 +223,7 @@ describe('RequestValidator', () => {
     });
 
     it('RequestValidator::validate() regex', () => {
-        expected = 'url: Param latlng must match regex /[-+]?\\d*\\.\\d*,[-+]?\\d*\\.\\d*/';
+        expected = 'Url: Param latlng must match regex /[-+]?\\d*\\.\\d*,[-+]?\\d*\\.\\d*/';
         validator.validate({
             route: {
                 validation: {

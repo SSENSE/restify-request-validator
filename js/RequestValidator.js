@@ -15,7 +15,7 @@ var RequestValidator = (function () {
                         this.validateFields(req.params, req.route.validation.url, true);
                     }
                     catch (err) {
-                        throw new Error("url: " + err.message);
+                        throw new Error("Url: " + err.message);
                     }
                 }
                 if (req.route.validation.hasOwnProperty('query')) {
@@ -23,7 +23,7 @@ var RequestValidator = (function () {
                         this.validateFields(req.query, req.route.validation.query, true);
                     }
                     catch (err) {
-                        throw new Error("query: " + err.message);
+                        throw new Error("Query: " + err.message);
                     }
                 }
                 if (req.route.validation.hasOwnProperty('body')) {
@@ -31,7 +31,7 @@ var RequestValidator = (function () {
                         this.validateFields(req.params, req.route.validation.body, false);
                     }
                     catch (err) {
-                        throw new Error("body: " + err.message);
+                        throw new Error("Body: " + err.message);
                     }
                 }
             }
