@@ -1,6 +1,6 @@
 "use strict";
 var ParamValidation_1 = require('./ParamValidation');
-var supportedTypes = ['string', 'number', 'boolean', 'numeric', 'array', 'object'];
+var supportedTypes = ['string', 'number', 'boolean', 'numeric', 'date', 'array', 'object'];
 var supportedArrayTypes = ['string', 'number', 'boolean', 'numeric'];
 var RequestValidator = (function () {
     function RequestValidator(errorHandler) {
@@ -84,9 +84,11 @@ var RequestValidator = (function () {
                         if (type === 'string' && inUrl && paramValidation.type === 'array') {
                             input[key] = input[key].split(',');
                         }
-                        if (RequestValidator.checkType(input[key], paramValidation.type) !== true) {
+                        var typeValidation = { value: input[key], type: paramValidation.type };
+                        if (RequestValidator.checkType(typeValidation) !== true) {
                             throw new Error("Param " + key + " has invalid type (" + paramValidation.type + ")");
                         }
+                        input[key] = typeValidation.value;
                         if (type !== 'undefined' && paramValidation.type === 'numeric') {
                             input[key] = parseInt(input[key], 10);
                         }
@@ -114,18 +116,26 @@ var RequestValidator = (function () {
             });
         }
     };
-    RequestValidator.checkType = function (input, type) {
-        var inputType = typeof input;
+    RequestValidator.checkType = function (typeValidation) {
+        var inputType = typeof typeValidation.value;
         if (inputType === 'undefined') {
             return true;
         }
-        else if (type === 'numeric') {
-            return !isNaN(input);
+        else if (typeValidation.type === 'numeric') {
+            return !isNaN(typeValidation.value);
         }
-        else if (type === 'array') {
-            return input instanceof Array;
+        else if (typeValidation.type === 'date') {
+            var date = Date.parse(typeValidation.value);
+            if (isNaN(date)) {
+                return false;
+            }
+            typeValidation.value = new Date(date);
+            return true;
         }
-        return inputType === type;
+        else if (typeValidation.type === 'array') {
+            return typeValidation.value instanceof Array;
+        }
+        return inputType === typeValidation.type;
     };
     RequestValidator.checkArrayType = function (input, type) {
         if (input.length === 0 || type === null) {

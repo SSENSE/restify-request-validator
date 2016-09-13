@@ -1,9 +1,14 @@
 import {ParamValidation} from './ParamValidation';
 
-const supportedTypes = ['string', 'number', 'boolean', 'numeric', 'array', 'object'];
+const supportedTypes = ['string', 'number', 'boolean', 'numeric', 'date', 'array', 'object'];
 const supportedArrayTypes = ['string', 'number', 'boolean', 'numeric'];
 
 // tslint:disable:no-reserved-keywords no-any
+interface TypeValidation {
+    value: any;
+    type: string;
+}
+
 export class RequestValidator {
     private errorHandler: any;
 
@@ -106,9 +111,11 @@ export class RequestValidator {
                         }
 
                         // Check type
-                        if (RequestValidator.checkType(input[key], paramValidation.type) !== true) {
+                        const typeValidation = {value: input[key], type: paramValidation.type};
+                        if (RequestValidator.checkType(typeValidation) !== true) {
                             throw new Error(`Param ${key} has invalid type (${paramValidation.type})`);
                         }
+                        input[key] = typeValidation.value;
 
                         // Parse "numeric" values to numbers in order to pass next validations
                         if (type !== 'undefined' && paramValidation.type === 'numeric') {
@@ -151,16 +158,26 @@ export class RequestValidator {
         }
     }
 
-    private static checkType(input: any, type: string): boolean {
-        const inputType = typeof input;
+    private static checkType(typeValidation: TypeValidation): boolean {
+        const inputType = typeof typeValidation.value;
         if (inputType === 'undefined') {
             return true;
-        } else if (type === 'numeric') {
-            return !isNaN(input);
-        } else if (type === 'array') {
-            return input instanceof Array;
+        } else if (typeValidation.type === 'numeric') {
+            return !isNaN(typeValidation.value);
+        } else if (typeValidation.type === 'date') {
+            const date = Date.parse(typeValidation.value);
+            if (isNaN(date)) {
+                return false;
+            }
+
+            // We update the input with a valid Date object instead of a string
+            typeValidation.value = new Date(date);
+
+            return true;
+        } else if (typeValidation.type === 'array') {
+            return typeValidation.value instanceof Array;
         }
-        return inputType === type;
+        return inputType === typeValidation.type;
     }
 
     private static checkArrayType(input: any[], type: string): boolean {

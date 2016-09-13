@@ -15,6 +15,7 @@ function test(err: any): void {
 describe('RequestValidator', () => {
     before(() => {
         validator = new RequestValidator();
+        validator = new RequestValidator(Error);
     });
 
     it('RequestValidator::validate() empty', () => {
@@ -92,6 +93,32 @@ describe('RequestValidator', () => {
                 }
             }, params: {
                 categories: []
+            }
+        }, null, test);
+
+        expected = 'Body: Param createdAt has invalid type (date)';
+        validator.validate({
+            route: {
+                validation: {
+                    body: {
+                        createdAt: {type: 'date', required: true}
+                    }
+                }
+            }, params: {
+                createdAt: 'foo'
+            }
+        }, null, test);
+
+        expected = undefined;//'Body: Param categories must have a minimum length of 1';
+        validator.validate({
+            route: {
+                validation: {
+                    body: {
+                        createdAt: {type: 'date', required: true}
+                    }
+                }
+            }, params: {
+                createdAt: '2016-09-01T18:29:25.642Z'
             }
         }, null, test);
     });
