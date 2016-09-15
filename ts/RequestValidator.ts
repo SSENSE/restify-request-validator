@@ -182,10 +182,13 @@ export class RequestValidator {
 
     private static checkType(typeValidation: TypeValidation): boolean {
         const inputType = typeof typeValidation.value;
+
         if (inputType === 'undefined') {
             return true;
         } else if (typeValidation.type === 'numeric') {
             return !isNaN(typeValidation.value);
+        } else if (typeValidation.type === 'boolean') {
+            return ['0', '1', 'false', 'true', false, true].indexOf(typeValidation.value) !== -1;
         } else if (typeValidation.type === 'date') {
             const date = Date.parse(typeValidation.value);
             if (isNaN(date)) {
