@@ -263,4 +263,26 @@ describe('RequestValidator', () => {
             }
         }, null, test);
     });
+
+    it('RequestValidator with failOnFirstError=false', () => {
+        validator.disableFailOnFirstError();
+
+        expected = 'Query: Param description is required\nQuery: Param enabled is required\nQuery: Param designers must have a length of 2';
+        validator.validate({
+            route: {
+                validation: {
+                    query: {
+                        id: {type: 'numeric', required: true, length: 3},
+                        name: {type: 'string', required: false, length: 4},
+                        description: {type: 'string', required: true, length: 3},
+                        enabled: {type: 'boolean', required: true, length: 10},
+                        designers: {type: 'array', required: true, length: 2}
+                    }
+                }
+            }, query: {
+                id: '3456',
+                designers: '1,3,9',
+            }
+        }, null, test);
+    });
 });
