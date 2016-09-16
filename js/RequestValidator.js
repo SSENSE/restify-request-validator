@@ -5,40 +5,33 @@ var supportedArrayTypes = ['string', 'number', 'boolean', 'numeric'];
 var RequestValidator = (function () {
     function RequestValidator(errorHandler) {
         if (errorHandler === void 0) { errorHandler = Error; }
+        this.failOnFirstError = true;
         this.errorHandler = errorHandler;
     }
+    RequestValidator.prototype.disableFailOnFirstError = function () {
+        this.failOnFirstError = false;
+    };
     RequestValidator.prototype.validate = function (req, res, next) {
-        try {
-            if (req.hasOwnProperty('route') && req.route.hasOwnProperty('validation')) {
-                if (req.route.validation.hasOwnProperty('url')) {
-                    try {
-                        this.validateFields(req.params, req.route.validation.url, true);
-                    }
-                    catch (err) {
-                        throw new Error("Url: " + err.message);
-                    }
-                }
-                if (req.route.validation.hasOwnProperty('query')) {
-                    try {
-                        this.validateFields(req.query, req.route.validation.query, true);
-                    }
-                    catch (err) {
-                        throw new Error("Query: " + err.message);
-                    }
-                }
-                if (req.route.validation.hasOwnProperty('body')) {
-                    try {
-                        this.validateFields(req.params, req.route.validation.body, false);
-                    }
-                    catch (err) {
-                        throw new Error("Body: " + err.message);
-                    }
-                }
+        if (req.hasOwnProperty('route') && req.route.hasOwnProperty('validation')) {
+            var errorMessages = [];
+            if (req.route.validation.hasOwnProperty('url')) {
+                errorMessages = errorMessages.concat(this.validateFields(req.params, req.route.validation.url, true).map(function (msg) { return ("Url: " + msg); }));
             }
-        }
-        catch (err) {
-            next(new this.errorHandler(err.message));
-            return;
+            if (req.route.validation.hasOwnProperty('query')) {
+                errorMessages = errorMessages.concat(this.validateFields(req.query, req.route.validation.query, true).map(function (msg) { return ("Query: " + msg); }));
+            }
+            if (req.route.validation.hasOwnProperty('body')) {
+                errorMessages = errorMessages.concat(this.validateFields(req.params, req.route.validation.body, false).map(function (msg) { return ("Body: " + msg); }));
+            }
+            if (errorMessages.length) {
+                if (this.failOnFirstError) {
+                    next(new this.errorHandler(errorMessages[0]));
+                }
+                else {
+                    next(new this.errorHandler(errorMessages.join('\n')));
+                }
+                return;
+            }
         }
         next();
     };
@@ -73,48 +66,60 @@ var RequestValidator = (function () {
     };
     RequestValidator.prototype.validateFields = function (input, validation, inUrl) {
         if (validation) {
-            Object.keys(validation).forEach(function (key) {
+            var errorMessages = [];
+            for (var _i = 0, _a = Object.keys(validation); _i < _a.length; _i++) {
+                var key = _a[_i];
                 var paramValidation = RequestValidator.buildValidationParam(validation[key]);
                 if (paramValidation) {
                     var type = input ? typeof input[key] : undefined;
                     if (paramValidation.required === true && (!input || type === 'undefined')) {
-                        throw new Error("Param " + key + " is required");
+                        errorMessages = errorMessages.concat("Param " + key + " is required");
                     }
                     if (input) {
                         if (type === 'string' && inUrl && paramValidation.type === 'array') {
                             input[key] = input[key].split(',');
                         }
-                        var typeValidation = { value: input[key], type: paramValidation.type };
-                        if (RequestValidator.checkType(typeValidation) !== true) {
-                            throw new Error("Param " + key + " has invalid type (" + paramValidation.type + ")");
-                        }
-                        input[key] = typeValidation.value;
-                        if (type !== 'undefined' && paramValidation.type === 'numeric') {
-                            input[key] = parseInt(input[key], 10);
-                        }
-                        if (input[key] instanceof Array
-                            && RequestValidator.checkArrayType(input[key], paramValidation.arrayType) !== true) {
-                            throw new Error("Param " + key + " has invalid content type (" + paramValidation.arrayType + "[])");
-                        }
-                        if (RequestValidator.checkLength(input[key], paramValidation.length) !== true) {
-                            throw new Error("Param " + key + " must have a length of " + paramValidation.length);
-                        }
-                        if (RequestValidator.checkMin(input[key], paramValidation.min) !== true) {
-                            throw new Error("Param " + key + " must have a minimum length of " + paramValidation.min);
-                        }
-                        if (RequestValidator.checkMax(input[key], paramValidation.max) !== true) {
-                            throw new Error("Param " + key + " must have a maximum length of " + paramValidation.max);
-                        }
-                        if (RequestValidator.checkValues(input[key], paramValidation.values) !== true) {
-                            throw new Error("Param " + key + " must belong to [" + paramValidation.values.toString() + "]");
-                        }
-                        if (paramValidation.regex && !paramValidation.regex.test(input[key])) {
-                            throw new Error("Param " + key + " must match regex " + paramValidation.regex);
+                        errorMessages = errorMessages.concat(this.validateField(key, input[key], type, paramValidation));
+                        if (this.failOnFirstError && errorMessages.length) {
+                            break;
                         }
                     }
                 }
-            });
+            }
+            return errorMessages;
         }
+        return [];
+    };
+    RequestValidator.prototype.validateField = function (key, value, type, paramValidation) {
+        var errorMessages = [];
+        var typeValidation = { value: value, type: paramValidation.type };
+        if (RequestValidator.checkType(typeValidation) !== true) {
+            errorMessages.push("Param " + key + " has invalid type (" + paramValidation.type + ")");
+        }
+        value = typeValidation.value;
+        if (type !== 'undefined' && paramValidation.type === 'numeric') {
+            value = parseInt(value, 10);
+        }
+        if (value instanceof Array
+            && RequestValidator.checkArrayType(value, paramValidation.arrayType) !== true) {
+            errorMessages.push("Param " + key + " has invalid content type (" + paramValidation.arrayType + "[])");
+        }
+        if (RequestValidator.checkLength(value, paramValidation.length) !== true) {
+            errorMessages.push("Param " + key + " must have a length of " + paramValidation.length);
+        }
+        if (RequestValidator.checkMin(value, paramValidation.min) !== true) {
+            errorMessages.push("Param " + key + " must have a minimum length of " + paramValidation.min);
+        }
+        if (RequestValidator.checkMax(value, paramValidation.max) !== true) {
+            errorMessages.push("Param " + key + " must have a maximum length of " + paramValidation.max);
+        }
+        if (RequestValidator.checkValues(value, paramValidation.values) !== true) {
+            errorMessages.push("Param " + key + " must belong to [" + paramValidation.values.toString() + "]");
+        }
+        if (paramValidation.regex && !paramValidation.regex.test(value)) {
+            errorMessages.push("Param " + key + " must match regex " + paramValidation.regex);
+        }
+        return errorMessages;
     };
     RequestValidator.checkType = function (typeValidation) {
         var inputType = typeof typeValidation.value;
@@ -123,6 +128,9 @@ var RequestValidator = (function () {
         }
         else if (typeValidation.type === 'numeric') {
             return !isNaN(typeValidation.value);
+        }
+        else if (typeValidation.type === 'boolean') {
+            return ['0', '1', 'false', 'true', false, true].indexOf(typeValidation.value) !== -1;
         }
         else if (typeValidation.type === 'date') {
             var date = Date.parse(typeValidation.value);
