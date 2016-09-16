@@ -17,7 +17,7 @@ export class RequestValidator {
         this.errorHandler = errorHandler;
     }
 
-    public disableFailOnFirstError(): any {
+    public disableFailOnFirstError(): void {
         this.failOnFirstError = false;
     }
 

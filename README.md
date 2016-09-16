@@ -115,6 +115,40 @@ validation: {
 }
 ```
 
+#### Behavior
+
+By default the validator will throw an error on the first validation failure, if you want to change this behavior to get all the validation errors, you can call the `disableFailOnFirstError` method on your `validator` object:
+
+##### For javascript project
+
+```js
+// Require module
+var restifyValidation = require('@ssense/restify-request-validator');
+...
+// Create restify server
+var server = restify.createServer();
+...
+// Add middleware
+var validator = new restifyValidation.RequestValidator();
+validator.disableFailOnFirstError();
+server.use(validator.validate.bind(validator));
+```
+
+##### For typescript project
+
+```js
+// Import module
+import {RequestValidator} from '@ssense/restify-request-validator';
+...
+// Create restify server
+const server = restify.createServer();
+...
+// Add middleware
+const validator = new RequestValidator();
+validator.disableFailOnFirstError();
+server.use(validator.validate.bind(validator));
+```
+
 ## Development
 
 ### Installation
@@ -142,6 +176,7 @@ npm run compile
 ## Authors
 
 * **Rémy Jeancolas** - *Initial work* - [RemyJeancolas](https://github.com/RemyJeancolas)
+* **Mickael Burguet** - *Add `disableFailOnFirstError` behavior* - [rundef](https://github.com/rundef)
 
 ## License
 
