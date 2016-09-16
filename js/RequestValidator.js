@@ -79,7 +79,7 @@ var RequestValidator = (function () {
                         if (type === 'string' && inUrl && paramValidation.type === 'array') {
                             input[key] = input[key].split(',');
                         }
-                        errorMessages = errorMessages.concat(this.validateField(key, input[key], type, paramValidation));
+                        errorMessages = errorMessages.concat(this.validateField(input, key, type, paramValidation));
                         if (this.failOnFirstError && errorMessages.length) {
                             break;
                         }
@@ -90,33 +90,33 @@ var RequestValidator = (function () {
         }
         return [];
     };
-    RequestValidator.prototype.validateField = function (key, value, type, paramValidation) {
+    RequestValidator.prototype.validateField = function (input, key, type, paramValidation) {
         var errorMessages = [];
-        var typeValidation = { value: value, type: paramValidation.type };
+        var typeValidation = { value: input[key], type: paramValidation.type };
         if (RequestValidator.checkType(typeValidation) !== true) {
             errorMessages.push("Param " + key + " has invalid type (" + paramValidation.type + ")");
         }
-        value = typeValidation.value;
+        input[key] = typeValidation.value;
         if (type !== 'undefined' && paramValidation.type === 'numeric') {
-            value = parseInt(value, 10);
+            input[key] = parseInt(input[key], 10);
         }
-        if (value instanceof Array
-            && RequestValidator.checkArrayType(value, paramValidation.arrayType) !== true) {
+        if (input[key] instanceof Array
+            && RequestValidator.checkArrayType(input[key], paramValidation.arrayType) !== true) {
             errorMessages.push("Param " + key + " has invalid content type (" + paramValidation.arrayType + "[])");
         }
-        if (RequestValidator.checkLength(value, paramValidation.length) !== true) {
+        if (RequestValidator.checkLength(input[key], paramValidation.length) !== true) {
             errorMessages.push("Param " + key + " must have a length of " + paramValidation.length);
         }
-        if (RequestValidator.checkMin(value, paramValidation.min) !== true) {
+        if (RequestValidator.checkMin(input[key], paramValidation.min) !== true) {
             errorMessages.push("Param " + key + " must have a minimum length of " + paramValidation.min);
         }
-        if (RequestValidator.checkMax(value, paramValidation.max) !== true) {
+        if (RequestValidator.checkMax(input[key], paramValidation.max) !== true) {
             errorMessages.push("Param " + key + " must have a maximum length of " + paramValidation.max);
         }
-        if (RequestValidator.checkValues(value, paramValidation.values) !== true) {
+        if (RequestValidator.checkValues(input[key], paramValidation.values) !== true) {
             errorMessages.push("Param " + key + " must belong to [" + paramValidation.values.toString() + "]");
         }
-        if (paramValidation.regex && !paramValidation.regex.test(value)) {
+        if (paramValidation.regex && !paramValidation.regex.test(input[key])) {
             errorMessages.push("Param " + key + " must match regex " + paramValidation.regex);
         }
         return errorMessages;
