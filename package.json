@@ -31,12 +31,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:Groupe-Atallah/restify-request-validator.git"
+    "url": "git@github.com:SSENSE/restify-request-validator.git"
   },
   "bugs": {
-    "url": "https://github.com/Groupe-Atallah/restify-request-validator/issues"
+    "url": "https://github.com/SSENSE/restify-request-validator/issues"
   },
-  "homepage": "https://github.com/Groupe-Atallah/restify-request-validator#readme",
+  "homepage": "https://github.com/SSENSE/restify-request-validator#readme",
   "engines": {
     "node": ">= 6.2.0",
     "npm": ">= 3"

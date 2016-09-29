@@ -1,5 +1,7 @@
 # Restify request validator
 
+[![Build Status](https://travis-ci.org/SSENSE/restify-request-validator.svg?branch=master)](https://travis-ci.org/SSENSE/restify-request-validator)
+
 Simple restify middleware which adds validation for all incoming requests.
 
 ## Use in project
