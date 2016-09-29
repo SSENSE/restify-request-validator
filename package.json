@@ -8,7 +8,8 @@
     "compile": "rm -rf js/* && ./node_modules/.bin/tsc",
     "lint": "./node_modules/.bin/tslint ./ts/*.ts ./tests/*.ts --format verbose",
     "test": "./node_modules/.bin/mocha tests/unit --recursive --compilers ts:ts-node/register --bail",
-    "cover": "./node_modules/.bin/nyc --report-dir tests/coverage/ npm run test"
+    "cover": "./node_modules/.bin/nyc --report-dir tests/coverage/ npm run test",
+    "coveralls": "cat tests/coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "keywords": [
     "restify",
@@ -21,6 +22,7 @@
   "devDependencies": {
     "@ssense/tslint-config": "^1.0.1",
     "chai": "^3.5.0",
+    "coveralls": "^2.11.14",
     "mocha": "^3.0.2",
     "nyc": "^8.1.0",
     "pre-commit": "^1.1.3",
@@ -63,7 +65,8 @@
     "reporter": [
       "json",
       "html",
-      "text-summary"
+      "text-summary",
+      "lcov"
     ]
   }
 }

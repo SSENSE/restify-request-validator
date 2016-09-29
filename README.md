@@ -1,6 +1,7 @@
 # Restify request validator
 
 [![Build Status](https://travis-ci.org/SSENSE/restify-request-validator.svg?branch=master)](https://travis-ci.org/SSENSE/restify-request-validator)
+[![Coverage Status](https://coveralls.io/repos/github/SSENSE/restify-request-validator/badge.svg?branch=master)](https://coveralls.io/github/SSENSE/restify-request-validator?branch=master)
 
 Simple restify middleware which adds validation for all incoming requests.
 
