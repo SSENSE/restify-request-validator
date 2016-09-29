@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/SSENSE/restify-request-validator.svg?branch=master)](https://travis-ci.org/SSENSE/restify-request-validator)
 [![Coverage Status](https://coveralls.io/repos/github/SSENSE/restify-request-validator/badge.svg?branch=master)](https://coveralls.io/github/SSENSE/restify-request-validator?branch=master)
+[![Latest Stable Version](https://img.shields.io/npm/v/@ssense/restify-request-validator.svg)](https://www.npmjs.com/package/@ssense/restify-request-validator)
 
 Simple restify middleware which adds validation for all incoming requests.
 
