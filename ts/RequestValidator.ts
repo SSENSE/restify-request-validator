@@ -190,14 +190,18 @@ export class RequestValidator {
         } else if (typeValidation.type === 'boolean') {
             return ['0', '1', 'false', 'true', false, true].indexOf(typeValidation.value) !== -1;
         } else if (typeValidation.type === 'date') {
-            const date = Date.parse(typeValidation.value);
-            if (isNaN(date)) {
+            if (typeof typeValidation.value === 'object' && typeof typeValidation.value.getTime === 'function') {
+                return true;
+            }
+
+            const milliseconds = Date.parse(typeValidation.value);
+            if (isNaN(milliseconds)) {
                 return false;
             }
 
             // We update the input with a valid Date object instead of a string
             typeValidation.value = new Date();
-            typeValidation.value.setTime(date);
+            typeValidation.value.setTime(milliseconds);
 
             return true;
         } else if (typeValidation.type === 'array') {
