@@ -137,7 +137,7 @@ var RequestValidator = (function () {
             if (isNaN(date)) {
                 return false;
             }
-            typeValidation.value = new Date(date);
+            typeValidation.value = new Date().setTime(date);
             return true;
         }
         else if (typeValidation.type === 'array') {
