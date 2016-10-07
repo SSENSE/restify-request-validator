@@ -196,7 +196,8 @@ export class RequestValidator {
             }
 
             // We update the input with a valid Date object instead of a string
-            typeValidation.value = new Date().setTime(date);
+            typeValidation.value = new Date();
+            typeValidation.value.setTime(date);
 
             return true;
         } else if (typeValidation.type === 'array') {
