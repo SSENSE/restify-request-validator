@@ -123,6 +123,36 @@ describe('RequestValidator', () => {
         }, null, test);
     });
 
+    it('RequestValidator::validate() date', () => {
+        var date = '2016-10-06T16:32:39.246Z';
+        var req = {
+            route: {
+                validation: {
+                    body: {
+                        startedAt: {type: 'date'}
+                    }
+                }
+            }, params: {
+                startedAt: date
+            }
+        };
+
+        validator.validate(req, null, (err: any) => {
+            expect(err).to.be.undefined;
+            expect(typeof req.params.startedAt).to.be.equal('object');
+            expect(typeof (<any> req.params.startedAt).getTime).to.be.equal('function');
+            expect((<any> req.params.startedAt).getTime()).to.be.equal(Date.parse(date));
+
+            // double date validation
+            validator.validate(req, null, (err: any) => {
+                expect(err).to.be.undefined;
+                expect(typeof req.params.startedAt).to.be.equal('object');
+                expect(typeof (<any> req.params.startedAt).getTime).to.be.equal('function');
+                expect((<any> req.params.startedAt).getTime()).to.be.equal(Date.parse(date));
+            });
+        });
+    });
+
     it('RequestValidator::validate() min', () => {
         expected = 'Query: Param id must have a minimum length of 2';
         validator.validate({

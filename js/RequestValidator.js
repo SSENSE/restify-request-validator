@@ -133,11 +133,15 @@ var RequestValidator = (function () {
             return ['0', '1', 'false', 'true', false, true].indexOf(typeValidation.value) !== -1;
         }
         else if (typeValidation.type === 'date') {
-            var date = Date.parse(typeValidation.value);
-            if (isNaN(date)) {
+            if (typeof typeValidation.value === 'object' && typeof typeValidation.value.getTime === 'function') {
+                return true;
+            }
+            var milliseconds = Date.parse(typeValidation.value);
+            if (isNaN(milliseconds)) {
                 return false;
             }
-            typeValidation.value = new Date(date);
+            typeValidation.value = new Date();
+            typeValidation.value.setTime(milliseconds);
             return true;
         }
         else if (typeValidation.type === 'array') {
