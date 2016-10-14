@@ -119,6 +119,35 @@ validation: {
 }
 ```
 
+#### Custom error messages
+
+##### Example usage
+
+You can pass custom error messages via the `validationMessages` param of the route:
+
+```js
+function respond(req, res, next) {
+    res.send('hello ' + req.params.name);
+    next();
+}
+
+server.get({
+    url: '/hello/:name',
+    validation: {
+        url: {
+            name: {type: 'string', required: true, min: 3},
+        },
+    },
+    validationMessages: {
+        name: {
+            type: 'The name must be a string',
+            required: 'The name is required',
+            min: 'The name must have a minimum length of 3 characters'
+        }
+    },
+}, respond);
+```
+
 #### Behavior
 
 By default the validator will throw an error on the first validation failure, if you want to change this behavior to get all the validation errors, you can call the `disableFailOnFirstError` method on your `validator` object:

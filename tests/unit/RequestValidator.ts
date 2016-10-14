@@ -342,4 +342,104 @@ describe('RequestValidator', () => {
             }
         }, null, test);
     });
+
+    describe('Custom Error Messages', () => {
+        it('required', () => {
+            expected = 'The name is required';
+            validator.validate({
+                route: {
+                    validation: {
+                        url: {
+                            name: {type: 'string', required: true, min: 3},
+                        },
+                    },
+                    validationMessages: {
+                        name: {
+                            type: 'The name must be a string',
+                            required: 'The name is required',
+                            min: 'The name must have a minimum length of 3 characters'
+                        }
+                    },
+                }, url: {
+                    name: ''
+                }
+            }, null, test);
+        });
+
+        it('arrayType', () => {
+            expected = 'Categories must be an array of numbers';
+            validator.validate({
+                route: {
+                    validation: {
+                        query: {
+                            categories: {type: 'array', required: true, arrayType: 'number'}
+                        }
+                    },
+                    validationMessages: {
+                        categories: {
+                            arrayType: 'Categories must be an array of numbers'
+                        }
+                    }
+                }, query: {
+                    categories: '2,a'
+                }
+            }, null, test);
+        });
+
+        it('regex', () => {
+            expected = 'Website must start with http://';
+            validator.validate({
+                route: {
+                    validation: {
+                        body: {
+                            website: {type: 'string', required: true, regex: /^http:\/\//}
+                        }
+                    },
+                    validationMessages: {
+                        website: {
+                            regex: 'Website must start with http://'
+                        }
+                    }
+                }, params: {
+                    website: 'test'
+                }
+            }, null, test);
+        });
+
+        it('min/max/length/values with failOnFirstError=false', () => {
+            validator.disableFailOnFirstError();
+
+            expected = 'Description must have a length >= 2\nSEO Keyword must have a length <= 2\nDesigners must have a length = 2\nDesigners must be either 1 or 2';
+            validator.validate({
+                route: {
+                    validation: {
+                        query: {
+                            id: {type: 'numeric', required: true, length: 3},
+                            name: {type: 'string', required: false, length: 4},
+                            description: {type: 'string', required: true, min: 2},
+                            seo_keyword: {type: 'string', required: true, max: 2},
+                            designers: {type: 'array', required: true, length: 2, values: ['1', '2']}
+                        }
+                    },
+                    validationMessages: {
+                        description: {
+                            min: 'Description must have a length >= 2',
+                        },
+                        seo_keyword: {
+                            max: 'SEO Keyword must have a length <= 2',
+                        },
+                        designers: {
+                            length: 'Designers must have a length = 2',
+                            values: 'Designers must be either 1 or 2'
+                        }
+                    }
+                }, query: {
+                    id: '3456',
+                    description: 'a',
+                    seo_keyword: 'abcd',
+                    designers: '1,3,9',
+                },
+            }, null, test);
+        });
+    });
 });

@@ -3,3 +3,4 @@ typings/
 .idea/
 .nyc_output/
 npm-debug.log
+tests/coverage
