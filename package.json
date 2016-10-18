@@ -1,6 +1,6 @@
 {
   "name": "@ssense/restify-request-validator",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Restify requests validator",
   "main": "js/index.js",
   "scripts": {
