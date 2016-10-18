@@ -1,0 +1,7 @@
+tests
+ts
+tsconfig.json
+tslint.json
+typings.json
+.gitignore
+.travis.yml
