@@ -13,12 +13,15 @@ var RequestValidator = (function () {
     };
     RequestValidator.prototype.getErrorMessage = function (field, errorType, defaultMessage) {
         if (this.customErrorMessages.hasOwnProperty(field) && this.customErrorMessages[field].hasOwnProperty(errorType)) {
-            return this.customErrorMessages[field][errorType];
+            return {
+                message: this.customErrorMessages[field][errorType],
+                isCustom: true
+            };
         }
-        return defaultMessage;
-    };
-    RequestValidator.prototype.hasCustomErrorMessages = function () {
-        return Object.keys(this.customErrorMessages).length > 0;
+        return {
+            message: defaultMessage,
+            isCustom: false
+        };
     };
     RequestValidator.prototype.validate = function (req, res, next) {
         if (req.hasOwnProperty('route') && req.route.hasOwnProperty('validation')) {
@@ -30,13 +33,16 @@ var RequestValidator = (function () {
             }
             var errorMessages = [];
             if (req.route.validation.hasOwnProperty('url')) {
-                errorMessages = errorMessages.concat(this.validateFields(req.params, req.route.validation.url, true).map(function (msg) { return ("Url: " + msg); }));
+                errorMessages = errorMessages.concat(this.validateFields(req.params, req.route.validation.url, true)
+                    .map(function (msg) { return msg.isCustom ? msg.message : "Url: " + msg.message; }));
             }
             if (req.route.validation.hasOwnProperty('query')) {
-                errorMessages = errorMessages.concat(this.validateFields(req.query, req.route.validation.query, true).map(function (msg) { return ("Query: " + msg); }));
+                errorMessages = errorMessages.concat(this.validateFields(req.query, req.route.validation.query, true)
+                    .map(function (msg) { return msg.isCustom ? msg.message : "Query: " + msg.message; }));
             }
             if (req.route.validation.hasOwnProperty('body')) {
-                errorMessages = errorMessages.concat(this.validateFields(req.params, req.route.validation.body, false).map(function (msg) { return ("Body: " + msg); }));
+                errorMessages = errorMessages.concat(this.validateFields(req.params, req.route.validation.body, false)
+                    .map(function (msg) { return msg.isCustom ? msg.message : "Body: " + msg.message; }));
             }
             if (errorMessages.length) {
                 if (this.failOnFirstError) {
