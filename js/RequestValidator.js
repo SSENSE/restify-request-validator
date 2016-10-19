@@ -117,7 +117,9 @@ var RequestValidator = (function () {
         if (RequestValidator.checkType(typeValidation) !== true) {
             errorMessages.push(this.getErrorMessage(key, 'type', "Param " + key + " has invalid type (" + paramValidation.type + ")"));
         }
-        input[key] = typeValidation.value;
+        if (typeValidation.value !== undefined) {
+            input[key] = typeValidation.value;
+        }
         if (type !== 'undefined' && paramValidation.type === 'numeric') {
             input[key] = parseInt(input[key], 10);
         }
