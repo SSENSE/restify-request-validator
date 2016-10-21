@@ -171,7 +171,10 @@ export class RequestValidator {
                 this.getErrorMessage(key, 'type', `Param ${key} has invalid type (${paramValidation.type})`)
             );
         }
-        input[key] = typeValidation.value;
+
+        if (typeValidation.value !== undefined) {
+            input[key] = typeValidation.value;
+        }
 
         // Parse "numeric" values to numbers in order to pass next validations
         if (type !== 'undefined' && paramValidation.type === 'numeric') {
