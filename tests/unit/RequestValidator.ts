@@ -27,105 +27,142 @@ describe('RequestValidator', () => {
 
     it('RequestValidator::validate() required', () => {
         expected = 'Url: Param id is required';
-        validator.validate({
-            route: {
-                validation: {
-                    url: {
-                        name: {required: true}, // Will not throw an error because type is not defined
-                        id: {type: 'number', required: true}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        url: {
+                            name: {required: true}, // Will not throw an error because type is not defined
+                            id: {type: 'number', required: true}
+                        }
                     }
-                }
-            }, params: {
-            }
-        }, null, test);
+                }, params: {}
+            },
+            null, test
+        );
     });
 
+    // tslint:disable-next-line:max-func-body-length
     it('RequestValidator::validate() type', () => {
         expected = 'Url: Param id has invalid type (number)';
-        validator.validate({
-            route: {
-                validation: {
-                    url: {
-                        id: {type: 'number'}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        url: {
+                            id: {type: 'number'}
+                        }
                     }
+                }, params: {
+                    id: 'foo'
                 }
-            }, params: {
-                id: 'foo'
-            }
-        }, null, test);
+            },
+            null, test
+        );
+
+        expected = 'Url: Param id has invalid type (numeric)';
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        url: {
+                            id: {type: 'numeric'}
+                        }
+                    }
+                }, params: {
+                    id: 'foo'
+                }
+            },
+            null, test
+        );
 
         expected = undefined;
-        validator.validate({
-            route: {
-                validation: {
-                    query: {
-                        name: {type: 'string', required: false},
-                        id: {type: 'numeric', required: false}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            name: {type: 'string', required: false},
+                            id: {type: 'numeric', required: false}
+                        }
                     }
+                }, query: {
+                    id: '5'
                 }
-            }, query: {
-                id: '5'
-            }
-        }, null, test);
+            },
+            null, test
+        );
 
         expected = 'Url: Param categories has invalid content type (number[])';
-        validator.validate({
-            route: {
-                validation: {
-                    url: {
-                        designers: {type: 'array', required: true, arrayType: 'numeric'},
-                        categories: {type: 'array', required: true, arrayType: 'number'}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        url: {
+                            designers: {type: 'array', required: true, arrayType: 'numeric'},
+                            categories: {type: 'array', required: true, arrayType: 'number'}
+                        }
                     }
+                }, params: {
+                    designers: '1,2',
+                    categories: 'foo,1'
                 }
-            }, params: {
-                designers: '1,2',
-                categories: 'foo,1'
-            }
-        }, null, test);
+            },
+            null, test
+        );
 
         expected = 'Body: Param categories must have a minimum length of 1';
-        validator.validate({
-            route: {
-                validation: {
-                    body: {
-                        categories: {type: 'array', required: false, arrayType: 'number'}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        body: {
+                            categories: {type: 'array', required: false, arrayType: 'number'}
+                        }
                     }
+                }, params: {
+                    categories: []
                 }
-            }, params: {
-                categories: []
-            }
-        }, null, test);
+            },
+            null, test
+        );
 
         expected = 'Body: Param createdAt has invalid type (date)';
-        validator.validate({
-            route: {
-                validation: {
-                    body: {
-                        createdAt: {type: 'date', required: true}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        body: {
+                            createdAt: {type: 'date', required: true}
+                        }
                     }
+                }, params: {
+                    createdAt: 'foo'
                 }
-            }, params: {
-                createdAt: 'foo'
-            }
-        }, null, test);
+            },
+            null, test
+        );
 
-        expected = undefined;//'Body: Param categories must have a minimum length of 1';
-        validator.validate({
-            route: {
-                validation: {
-                    body: {
-                        createdAt: {type: 'date', required: true}
+        expected = undefined;
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        body: {
+                            createdAt: {type: 'date', required: true}
+                        }
                     }
+                }, params: {
+                    createdAt: '2016-09-01T18:29:25.642Z'
                 }
-            }, params: {
-                createdAt: '2016-09-01T18:29:25.642Z'
-            }
-        }, null, test);
+            },
+            null, test
+        );
     });
 
     it('RequestValidator::validate() date', () => {
-        var date = '2016-10-06T16:32:39.246Z';
-        var req = {
+        const date = '2016-10-06T16:32:39.246Z';
+        const req = {
             route: {
                 validation: {
                     body: {
@@ -138,14 +175,14 @@ describe('RequestValidator', () => {
         };
 
         validator.validate(req, null, (err: any) => {
-            expect(err).to.be.undefined;
+            expect(err).to.equal(undefined, 'Error should be undefined');
             expect(typeof req.params.startedAt).to.be.equal('object');
             expect(typeof (<any> req.params.startedAt).getTime).to.be.equal('function');
             expect((<any> req.params.startedAt).getTime()).to.be.equal(Date.parse(date));
 
             // double date validation
-            validator.validate(req, null, (err: any) => {
-                expect(err).to.be.undefined;
+            validator.validate(req, null, (e: any) => {
+                expect(e).to.equal(undefined, 'Error should be undefined');
                 expect(typeof req.params.startedAt).to.be.equal('object');
                 expect(typeof (<any> req.params.startedAt).getTime).to.be.equal('function');
                 expect((<any> req.params.startedAt).getTime()).to.be.equal(Date.parse(date));
@@ -155,291 +192,365 @@ describe('RequestValidator', () => {
 
     it('RequestValidator::validate() min', () => {
         expected = 'Query: Param id must have a minimum length of 2';
-        validator.validate({
-            route: {
-                validation: {
-                    query: {
-                        id: {type: 'number', required: true, min: 2}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            id: {type: 'number', required: true, min: 2}
+                        }
                     }
+                }, query: {
+                    id: 1
                 }
-            }, query: {
-                id: 1
-            }
-        }, null, test);
+            },
+            null, test
+        );
 
         expected = 'Query: Param name must have a minimum length of 4';
-        validator.validate({
-            route: {
-                validation: {
-                    query: {
-                        name: {type: 'string', required: true, min: 4}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            name: {type: 'string', required: true, min: 4}
+                        }
                     }
+                }, query: {
+                    name: 'foo'
                 }
-            }, query: {
-                name: 'foo'
-            }
-        }, null, test);
+            },
+            null, test
+        );
 
         expected = undefined;
-        validator.validate({
-            route: {
-                validation: {
-                    body: {
-                        enabled: {type: 'boolean', required: true}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        body: {
+                            enabled: {type: 'boolean', required: true}
+                        }
                     }
+                }, params: {
+                    enabled: true
                 }
-            }, params: {
-                enabled: true
-            }
-        }, null, test);
+            },
+            null, test
+        );
     });
 
     it('RequestValidator::validate() max', () => {
         expected = 'Query: Param id must have a maximum length of 2';
-        validator.validate({
-            route: {
-                validation: {
-                    query: {
-                        name: {type: 'string', required: false, max: 3},
-                        id: {type: 'numeric', required: true, max: 2}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            name: {type: 'string', required: false, max: 3},
+                            id: {type: 'numeric', required: true, max: 2}
+                        }
                     }
+                }, query: {
+                    id: '3'
                 }
-            }, query: {
-                id: '3'
-            }
-        }, null, test);
+            },
+            null, test
+        );
 
         expected = 'Query: Param name must have a maximum length of 2';
-        validator.validate({
-            route: {
-                validation: {
-                    query: {
-                        designers: {type: 'array', required: true, max: 3},
-                        enabled: {type: 'boolean', required: true, max: 2},
-                        name: {type: 'string', required: true, max: 2}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            designers: {type: 'array', required: true, max: 3},
+                            enabled: {type: 'boolean', required: true, max: 2},
+                            name: {type: 'string', required: true, max: 2}
+                        }
                     }
+                }, query: {
+                    name: 'foo',
+                    designers: '1,foo',
+                    enabled: false
                 }
-            }, query: {
-                name: 'foo',
-                designers: '1,foo',
-                enabled: false
-            }
-        }, null, test);
+            },
+            null, test
+        );
     });
 
     it('RequestValidator::validate() length', () => {
         expected = 'Query: Param designers must have a length of 2';
-        validator.validate({
-            route: {
-                validation: {
-                    query: {
-                        id: {type: 'numeric', required: true, length: 3},
-                        name: {type: 'string', required: false, length: 4},
-                        description: {type: 'string', required: true, length: 3},
-                        enabled: {type: 'boolean', required: true, length: 10},
-                        designers: {type: 'array', required: true, length: 2}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            id: {type: 'numeric', required: true, length: 3},
+                            name: {type: 'string', required: false, length: 4},
+                            description: {type: 'string', required: true, length: 3},
+                            enabled: {type: 'boolean', required: true, length: 10},
+                            designers: {type: 'array', required: true, length: 2}
+                        }
                     }
+                }, query: {
+                    id: '3456',
+                    description: 'foo',
+                    designers: '1,3,9',
+                    enabled: true
                 }
-            }, query: {
-                id: '3456',
-                description: 'foo',
-                designers: '1,3,9',
-                enabled: true
-            }
-        }, null, test);
+            },
+            null, test
+        );
     });
 
     it('RequestValidator::validate() values', () => {
         expected = 'Query: Param gender must belong to [men,women]';
-        validator.validate({
-            route: {
-                validation: {
-                    query: {
-                        with: {type: 'array', required: true, values: ['men', 'women']},
-                        gender: {type: 'string', required: true, values: ['men', 'women']},
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            with: {type: 'array', required: true, values: ['men', 'women']},
+                            gender: {type: 'string', required: true, values: ['men', 'women']}
+                        }
                     }
+                }, query: {
+                    with: 'men,men',
+                    gender: 'foo'
                 }
-            }, query: {
-                with: 'men,men',
-                gender: 'foo'
-            }
-        }, null, test);
+            },
+            null, test
+        );
 
         expected = 'Query: Param with must belong to [men,women]';
-        validator.validate({
-            route: {
-                validation: {
-                    query: {
-                        with: {type: 'array', required: true, values: ['men', 'women']}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            with: {type: 'array', required: true, values: ['men', 'women']}
+                        }
                     }
+                }, query: {
+                    with: 'men,foo'
                 }
-            }, query: {
-                with: 'men,foo',
-            }
-        }, null, test);
+            },
+            null, test
+        );
     });
 
     it('RequestValidator::validate() regex', () => {
         expected = 'Url: Param latlng must match regex /[-+]?\\d*\\.\\d*,[-+]?\\d*\\.\\d*/';
-        validator.validate({
-            route: {
-                validation: {
-                    url: {
-                        latlng: {type: 'string', required: true, regex: /[-+]?\d*\.\d*,[-+]?\d*\.\d*/}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        url: {
+                            latlng: {type: 'string', required: true, regex: /[-+]?\d*\.\d*,[-+]?\d*\.\d*/}
+                        }
                     }
+                }, params: {
+                    latlng: 'foo'
                 }
-            }, params: {
-                latlng: 'foo'
-            }
-        }, null, test);
+            },
+            null, test
+        );
+    });
+
+    it('RequestValidator::validate() format', () => {
+        expected = undefined;
+        const req: any = {
+            language: 'fr',
+            count: 1
+        };
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        url: {
+                            language: {type: 'string', required: true, format: (v: string) => v.toUpperCase() },
+                            count: {type: 'number', required: true, format: (v: number) => v + 1 }
+                        }
+                    }
+                },
+                params: req
+            },
+            null, test
+        );
+
+        expect(req.language).to.equal('FR');
+        expect(req.count).to.equal(2);
     });
 
     it('RequestValidator::validate() boolean', () => {
         expected = undefined;
-        validator.validate({
-            route: {
-                validation: {
-                    body: {
-                        enabled: {type: 'boolean', required: true}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        body: {
+                            enabled: {type: 'boolean', required: true}
+                        }
                     }
+                }, params: {
+                    enabled: 'true'
                 }
-            }, params: {
-                enabled: 'true'
-            }
-        }, null, test);
+            },
+            null, test
+        );
 
-        validator.validate({
-            route: {
-                validation: {
-                    body: {
-                        enabled: {type: 'boolean', required: true}
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        body: {
+                            enabled: {type: 'boolean', required: true}
+                        }
                     }
+                }, params: {
+                    enabled: '0'
                 }
-            }, params: {
-                enabled: '0'
-            }
-        }, null, test);
+            },
+            null, test
+        );
     });
 
     it('RequestValidator with failOnFirstError=false', () => {
         validator.disableFailOnFirstError();
 
         expected = 'Query: Param description is required\nQuery: Param enabled is required\nQuery: Param designers must have a length of 2';
-        validator.validate({
-            route: {
-                validation: {
-                    query: {
-                        id: {type: 'numeric', required: true, length: 3},
-                        name: {type: 'string', required: false, length: 4},
-                        description: {type: 'string', required: true, length: 3},
-                        enabled: {type: 'boolean', required: true, length: 10},
-                        designers: {type: 'array', required: true, length: 2}
-                    }
-                }
-            }, query: {
-                id: '3456',
-                designers: '1,3,9',
-            }
-        }, null, test);
-    });
-
-    describe('Custom Error Messages', () => {
-        it('required', () => {
-            expected = 'The name is required';
-            validator.validate({
-                route: {
-                    validation: {
-                        url: {
-                            name: {type: 'string', required: true, min: 3},
-                        },
-                    },
-                    validationMessages: {
-                        name: {
-                            type: 'The name must be a string',
-                            required: 'The name is required',
-                            min: 'The name must have a minimum length of 3 characters'
-                        }
-                    },
-                }, url: {
-                    name: ''
-                }
-            }, null, test);
-        });
-
-        it('arrayType', () => {
-            expected = 'Categories must be an array of numbers';
-            validator.validate({
-                route: {
-                    validation: {
-                        query: {
-                            categories: {type: 'array', required: true, arrayType: 'number'}
-                        }
-                    },
-                    validationMessages: {
-                        categories: {
-                            arrayType: 'Categories must be an array of numbers'
-                        }
-                    }
-                }, query: {
-                    categories: '2,a'
-                }
-            }, null, test);
-        });
-
-        it('regex', () => {
-            expected = 'Website must start with http://';
-            validator.validate({
-                route: {
-                    validation: {
-                        body: {
-                            website: {type: 'string', required: true, regex: /^http:\/\//}
-                        }
-                    },
-                    validationMessages: {
-                        website: {
-                            regex: 'Website must start with http://'
-                        }
-                    }
-                }, params: {
-                    website: 'test'
-                }
-            }, null, test);
-        });
-
-        it('min/max/length/values with failOnFirstError=false', () => {
-            validator.disableFailOnFirstError();
-
-            expected = 'Description must have a length >= 2\nSEO Keyword must have a length <= 2\nDesigners must have a length = 2\nDesigners must be either 1 or 2';
-            validator.validate({
+        validator.validate(
+            {
                 route: {
                     validation: {
                         query: {
                             id: {type: 'numeric', required: true, length: 3},
                             name: {type: 'string', required: false, length: 4},
-                            description: {type: 'string', required: true, min: 2},
-                            seo_keyword: {type: 'string', required: true, max: 2},
-                            designers: {type: 'array', required: true, length: 2, values: ['1', '2']}
-                        }
-                    },
-                    validationMessages: {
-                        description: {
-                            min: 'Description must have a length >= 2',
-                        },
-                        seo_keyword: {
-                            max: 'SEO Keyword must have a length <= 2',
-                        },
-                        designers: {
-                            length: 'Designers must have a length = 2',
-                            values: 'Designers must be either 1 or 2'
+                            description: {type: 'string', required: true, length: 3},
+                            enabled: {type: 'boolean', required: true, length: 10},
+                            designers: {type: 'array', required: true, length: 2}
                         }
                     }
                 }, query: {
                     id: '3456',
-                    description: 'a',
-                    seo_keyword: 'abcd',
-                    designers: '1,3,9',
+                    designers: '1,3,9'
+                }
+            },
+            null, test
+        );
+    });
+
+    describe('Custom Error Messages', () => {
+        it('required', () => {
+            expected = 'The name is required';
+            validator.validate(
+                {
+                    route: {
+                        validation: {
+                            url: {
+                                name: {type: 'string', required: true, min: 3}
+                            }
+                        },
+                        validationMessages: {
+                            name: {
+                                type: 'The name must be a string',
+                                required: 'The name is required',
+                                min: 'The name must have a minimum length of 3 characters'
+                            }
+                        }
+                    }, url: {
+                        name: ''
+                    }
                 },
-            }, null, test);
+                null, test
+            );
+        });
+
+        it('arrayType', () => {
+            expected = 'Categories must be an array of numbers';
+            validator.validate(
+                {
+                    route: {
+                        validation: {
+                            query: {
+                                categories: {type: 'array', required: true, arrayType: 'number'}
+                            }
+                        },
+                        validationMessages: {
+                            categories: {
+                                arrayType: 'Categories must be an array of numbers'
+                            }
+                        }
+                    }, query: {
+                        categories: '2,a'
+                    }
+                },
+                null, test
+            );
+        });
+
+        it('regex', () => {
+            expected = 'Website must start with http://';
+            validator.validate(
+                {
+                    route: {
+                        validation: {
+                            body: {
+                                website: {type: 'string', required: true, regex: /^http:\/\//}
+                            }
+                        },
+                        validationMessages: {
+                            website: {
+                                regex: 'Website must start with http://'
+                            }
+                        }
+                    }, params: {
+                        website: 'test'
+                    }
+                },
+                null, test
+            );
+        });
+
+        it('min/max/length/values with failOnFirstError=false', () => {
+            validator.disableFailOnFirstError();
+
+            // tslint:disable-next-line:max-line-length
+            expected = 'Description must have a length >= 2\nSEO Keyword must have a length <= 2\nDesigners must have a length = 2\nDesigners must be either 1 or 2';
+            validator.validate(
+                {
+                    route: {
+                        validation: {
+                            query: {
+                                id: {type: 'numeric', required: true, length: 3},
+                                name: {type: 'string', required: false, length: 4},
+                                description: {type: 'string', required: true, min: 2},
+                                seo_keyword: {type: 'string', required: true, max: 2},
+                                designers: {type: 'array', required: true, length: 2, values: ['1', '2']}
+                            }
+                        },
+                        validationMessages: {
+                            description: {
+                                min: 'Description must have a length >= 2'
+                            },
+                            seo_keyword: {
+                                max: 'SEO Keyword must have a length <= 2'
+                            },
+                            designers: {
+                                length: 'Designers must have a length = 2',
+                                values: 'Designers must be either 1 or 2'
+                            }
+                        }
+                    }, query: {
+                        id: '3456',
+                        description: 'a',
+                        seo_keyword: 'abcd',
+                        designers: '1,3,9'
+                    }
+                },
+                null, test
+            );
         });
     });
 });

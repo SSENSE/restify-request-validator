@@ -123,6 +123,11 @@ export class RequestValidator {
             paramValidation.regex = validation.regex;
         }
 
+        // Add "format" param
+        if (validation.hasOwnProperty('format') && typeof validation.format === 'function') {
+            paramValidation.format = validation.format;
+        }
+
         return paramValidation;
     }
 
@@ -176,11 +181,6 @@ export class RequestValidator {
             input[key] = typeValidation.value;
         }
 
-        // Parse "numeric" values to numbers in order to pass next validations
-        if (type !== 'undefined' && paramValidation.type === 'numeric') {
-            input[key] = parseInt(input[key], 10);
-        }
-
         // Check array content if needed
         if (input[key] instanceof Array
             && RequestValidator.checkArrayType(input[key], paramValidation.arrayType) !== true) {
@@ -224,6 +224,11 @@ export class RequestValidator {
             );
         }
 
+        // Apply format
+        if (paramValidation.format) {
+            input[key] = paramValidation.format(input[key]);
+        }
+
         return errorMessages;
     }
 
@@ -233,7 +238,11 @@ export class RequestValidator {
         if (inputType === 'undefined') {
             return true;
         } else if (typeValidation.type === 'numeric') {
-            return !isNaN(typeValidation.value);
+            const isNumeric = !isNaN(typeValidation.value);
+            if (isNumeric === true) {
+                typeValidation.value = parseInt(typeValidation.value, 10);
+            }
+            return isNumeric;
         } else if (typeValidation.type === 'boolean') {
             return ['0', '1', 'false', 'true', false, true].indexOf(typeValidation.value) !== -1;
         } else if (typeValidation.type === 'date') {

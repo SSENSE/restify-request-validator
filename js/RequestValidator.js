@@ -83,6 +83,9 @@ var RequestValidator = (function () {
         if (validation.hasOwnProperty('regex') && validation.regex instanceof RegExp) {
             paramValidation.regex = validation.regex;
         }
+        if (validation.hasOwnProperty('format') && typeof validation.format === 'function') {
+            paramValidation.format = validation.format;
+        }
         return paramValidation;
     };
     RequestValidator.prototype.validateFields = function (input, validation, inUrl) {
@@ -120,9 +123,6 @@ var RequestValidator = (function () {
         if (typeValidation.value !== undefined) {
             input[key] = typeValidation.value;
         }
-        if (type !== 'undefined' && paramValidation.type === 'numeric') {
-            input[key] = parseInt(input[key], 10);
-        }
         if (input[key] instanceof Array
             && RequestValidator.checkArrayType(input[key], paramValidation.arrayType) !== true) {
             errorMessages.push(this.getErrorMessage(key, 'arrayType', "Param " + key + " has invalid content type (" + paramValidation.arrayType + "[])"));
@@ -142,6 +142,9 @@ var RequestValidator = (function () {
         if (paramValidation.regex && !paramValidation.regex.test(input[key])) {
             errorMessages.push(this.getErrorMessage(key, 'regex', "Param " + key + " must match regex " + paramValidation.regex));
         }
+        if (paramValidation.format) {
+            input[key] = paramValidation.format(input[key]);
+        }
         return errorMessages;
     };
     RequestValidator.checkType = function (typeValidation) {
@@ -150,7 +153,11 @@ var RequestValidator = (function () {
             return true;
         }
         else if (typeValidation.type === 'numeric') {
-            return !isNaN(typeValidation.value);
+            var isNumeric = !isNaN(typeValidation.value);
+            if (isNumeric === true) {
+                typeValidation.value = parseInt(typeValidation.value, 10);
+            }
+            return isNumeric;
         }
         else if (typeValidation.type === 'boolean') {
             return ['0', '1', 'false', 'true', false, true].indexOf(typeValidation.value) !== -1;
