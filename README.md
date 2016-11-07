@@ -115,10 +115,43 @@ validation: {
             arrayType: 'valid type', // optional, default null, only works if 'type' property is 'array', check if the array content has valid types, supported types: 'string', 'number', 'boolean', 'numeric'
             values: ['value1', 'value2'], // optional, default null, validates that parameter value belongs to the provided list, if 'type' is 'array', validates every array element
             regex: /^Valid regex$/, // optional, default null, validates parameter value against provided regex
+            format: function(data): data // Function to transform input after validation, see below for more detail
         }
     }
 }
 ```
+
+#### Formatting data
+
+##### Auto formatting
+
+By default, every `numeric` and `date` inputs will be automatically transformed respectively to valid `number` and `Date` objects after validation. So you can directly use valid objects in your code.
+
+##### Extra formatting, data transformation
+
+If you need to add an extra formatting for one or several fields, just add the `format` parameter into your `validation` object. This parameter is a function with the following profile:
+
+```js
+format<T>(value: T): T;
+```
+
+Let's take an example:
+For a given route, let's say we want to transform one parameter called `language` to lower case, it could be performed as this:
+
+```js
+server.get({
+    url: '/posts/:language',
+    validation: {
+        url: {
+            language: {type: 'string', required: true, format: function(value) { return value.toLowerCase(); }}, // For Javascript
+            language: {type: 'string', required: true, format: (value: string) => value.toLowerCase()}, // For Typescript
+        },
+    },
+}, respond);
+
+```
+
+With this parameter, if the validation succeeds, the `respond` method will always have a lower case `language` parameter, whatever the original input is.
 
 #### Custom error messages
 

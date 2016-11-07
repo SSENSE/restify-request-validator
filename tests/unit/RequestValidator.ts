@@ -42,6 +42,7 @@ describe('RequestValidator', () => {
         );
     });
 
+    // tslint:disable-next-line:max-func-body-length
     it('RequestValidator::validate() type', () => {
         expected = 'Url: Param id has invalid type (number)';
         validator.validate(
@@ -50,6 +51,22 @@ describe('RequestValidator', () => {
                     validation: {
                         url: {
                             id: {type: 'number'}
+                        }
+                    }
+                }, params: {
+                    id: 'foo'
+                }
+            },
+            null, test
+        );
+
+        expected = 'Url: Param id has invalid type (numeric)';
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        url: {
+                            id: {type: 'numeric'}
                         }
                     }
                 }, params: {
@@ -126,7 +143,7 @@ describe('RequestValidator', () => {
             null, test
         );
 
-        expected = undefined; // 'Body: Param categories must have a minimum length of 1';
+        expected = undefined;
         validator.validate(
             {
                 route: {
@@ -339,6 +356,31 @@ describe('RequestValidator', () => {
             },
             null, test
         );
+    });
+
+    it('RequestValidator::validate() format', () => {
+        expected = undefined;
+        const req: any = {
+            language: 'fr',
+            count: 1
+        };
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        url: {
+                            language: {type: 'string', required: true, format: (v: string) => v.toUpperCase() },
+                            count: {type: 'number', required: true, format: (v: number) => v + 1 }
+                        }
+                    }
+                },
+                params: req
+            },
+            null, test
+        );
+
+        expect(req.language).to.equal('FR');
+        expect(req.count).to.equal(2);
     });
 
     it('RequestValidator::validate() boolean', () => {

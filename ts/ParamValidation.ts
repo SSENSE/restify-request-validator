@@ -7,4 +7,5 @@ export class ParamValidation {
     public arrayType: string = null;
     public values: any[] = null; // tslint:disable-line:no-any
     public regex: RegExp = null;
+    public format: <T>(data: T) => T;
 }
