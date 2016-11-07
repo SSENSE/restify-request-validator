@@ -225,7 +225,7 @@ export class RequestValidator {
         }
 
         // Apply format
-        if (paramValidation.format) {
+        if (paramValidation.format && input[key] !== undefined) {
             input[key] = paramValidation.format(input[key]);
         }
 

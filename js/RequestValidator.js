@@ -142,7 +142,7 @@ var RequestValidator = (function () {
         if (paramValidation.regex && !paramValidation.regex.test(input[key])) {
             errorMessages.push(this.getErrorMessage(key, 'regex', "Param " + key + " must match regex " + paramValidation.regex));
         }
-        if (paramValidation.format) {
+        if (paramValidation.format && input[key] !== undefined) {
             input[key] = paramValidation.format(input[key]);
         }
         return errorMessages;
