@@ -144,6 +144,7 @@ export class RequestValidator {
                         errorMessages = errorMessages.concat(
                             this.getErrorMessage(key, 'required', `Param ${key} is required`)
                         );
+                        continue;
                     }
 
                     if (input) {

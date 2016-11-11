@@ -98,6 +98,7 @@ var RequestValidator = (function () {
                     var type = input ? typeof input[key] : undefined;
                     if (paramValidation.required === true && (!input || type === 'undefined')) {
                         errorMessages = errorMessages.concat(this.getErrorMessage(key, 'required', "Param " + key + " is required"));
+                        continue;
                     }
                     if (input) {
                         if (type === 'string' && inUrl && paramValidation.type === 'array') {
