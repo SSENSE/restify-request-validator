@@ -140,7 +140,7 @@ var RequestValidator = (function () {
         if (RequestValidator.checkValues(input[key], paramValidation.values) !== true) {
             errorMessages.push(this.getErrorMessage(key, 'values', "Param " + key + " must belong to [" + paramValidation.values.toString() + "]"));
         }
-        if (paramValidation.regex && !paramValidation.regex.test(input[key])) {
+        if (input[key] !== undefined && paramValidation.regex && !paramValidation.regex.test(input[key])) {
             errorMessages.push(this.getErrorMessage(key, 'regex', "Param " + key + " must match regex " + paramValidation.regex));
         }
         if (paramValidation.format && input[key] !== undefined) {

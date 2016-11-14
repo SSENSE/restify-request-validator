@@ -219,7 +219,7 @@ export class RequestValidator {
         }
 
         // Check regex
-        if (paramValidation.regex && !paramValidation.regex.test(input[key])) {
+        if (input[key] !== undefined && paramValidation.regex && !paramValidation.regex.test(input[key])) {
             errorMessages.push(
                 this.getErrorMessage(key, 'regex', `Param ${key} must match regex ${paramValidation.regex}`)
             );

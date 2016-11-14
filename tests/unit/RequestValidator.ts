@@ -431,7 +431,8 @@ describe('RequestValidator', () => {
                             description: {type: 'string', required: true, length: 3},
                             enabled: {type: 'boolean', required: true, length: 10},
                             designers: {type: 'array', required: true, length: 2},
-                            categories: {type: 'array', required: true, length: 2, regex: /\d/}
+                            categories: {type: 'array', required: true, length: 2, regex: /\d/},
+                            countryCode: {type: 'string', required: false, regex: /^[A-Za-z]{2}$/}
                         }
                     }
                 }, query: {
