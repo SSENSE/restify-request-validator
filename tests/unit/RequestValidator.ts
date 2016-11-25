@@ -444,6 +444,145 @@ describe('RequestValidator', () => {
         );
     });
 
+    describe('Disallow extra fields', () => {
+        it('Should not allow extra fields (body)', () => {
+            expected = 'Body: Should not contain extra fields (forbiddenOther, forbiddenAnother)';
+            validator.validate(
+                {
+                    route: {
+                        validation: {
+                            body: {
+                                allowedField: {type: 'boolean', required: true},
+                                disallowExtraFields: true
+                            }
+                        }
+                    },
+                    params: {
+                        allowedField: true,
+                        forbiddenOther: 'foo',
+                        forbiddenAnother: 'foo'
+                    }
+                },
+                null,
+                test
+            );
+        });
+
+        it('Should not allow extra fields (url)', () => {
+            expected = 'Url: Should not contain extra fields (oneForbidden)';
+            validator.validate(
+                {
+                    route: {
+                        validation: {
+                            url: {
+                                allowedField: {type: 'boolean', required: true},
+                                disallowExtraFields: true
+                            }
+                        }
+                    },
+                    params: {
+                        allowedField: true,
+                        oneForbidden: 'foo'
+                    }
+                },
+                null,
+                test
+            );
+        });
+
+        it('Should not allow extra fields (query)', () => {
+            expected = 'Query: Should not contain extra fields (oneForbidden)';
+            validator.validate(
+                {
+                    route: {
+                        validation: {
+                            query: {
+                                allowedField: {type: 'boolean', required: true},
+                                disallowExtraFields: true
+                            }
+                        }
+                    },
+                    query: {
+                        allowedField: true,
+                        oneForbidden: 'foo'
+                    }
+                },
+                null,
+                test
+            );
+        });
+
+        it('Should handle custom error messages', () => {
+            expected = 'Payload contains forbidden data';
+            validator.validate(
+                {
+                    route: {
+                        validation: {
+                            query: {
+                                allowedField: {type: 'boolean', required: true},
+                                disallowExtraFields: true
+                            }
+                        },
+                        validationMessages: {
+                            disallowExtraFields: {
+                                default: expected
+                            }
+                        }
+                    },
+                    query: {
+                        allowedField: true,
+                        oneForbidden: 'foo'
+                    }
+                },
+                null,
+                test
+            );
+        });
+
+        it('Should succeed given correct fields', () => {
+            expected = undefined;
+            validator.validate(
+                {
+                    route: {
+                        validation: {
+                            query: {
+                                allowedField: {type: 'boolean', required: true},
+                                disallowExtraFields: true
+                            }
+                        }
+                    },
+                    query: {
+                        allowedField: true
+                    }
+                },
+                null,
+                test
+            );
+        });
+
+        it('Should not be active when disallowExtraFields=false', () => {
+            expected = undefined;
+            validator.validate(
+                {
+                    route: {
+                        validation: {
+                            query: {
+                                allowedField: {type: 'boolean', required: true},
+                                disallowExtraFields: false
+                            }
+                        }
+                    },
+                    query: {
+                        allowedField: true,
+                        oneForbidden: 'foo'
+                    }
+                },
+                null,
+                test
+            );
+        });
+    });
+
     describe('Custom Error Messages', () => {
         it('required', () => {
             expected = 'The name is required';

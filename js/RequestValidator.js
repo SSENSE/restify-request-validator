@@ -91,6 +91,15 @@ var RequestValidator = (function () {
     RequestValidator.prototype.validateFields = function (input, validation, inUrl) {
         if (validation) {
             var errorMessages = [];
+            if (validation.hasOwnProperty('disallowExtraFields')) {
+                if (validation.disallowExtraFields === true && input) {
+                    var difference = Object.keys(input).filter(function (x) { return Object.keys(validation).indexOf(x) === -1; });
+                    if (difference.length > 0) {
+                        errorMessages = errorMessages.concat(this.getErrorMessage('disallowExtraFields', 'default', "Should not contain extra fields (" + difference.join(', ') + ")"));
+                    }
+                }
+                delete validation.disallowExtraFields;
+            }
             for (var _i = 0, _a = Object.keys(validation); _i < _a.length; _i++) {
                 var key = _a[_i];
                 var paramValidation = RequestValidator.buildValidationParam(validation[key]);

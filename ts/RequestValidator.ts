@@ -135,6 +135,25 @@ export class RequestValidator {
         if (validation) {
             let errorMessages: ErrorMessage[] = [];
 
+            if (validation.hasOwnProperty('disallowExtraFields')) {
+                if (validation.disallowExtraFields === true && input) {
+                    // Check whether input has fields not present on validation
+                    const difference = Object.keys(input).filter(x => Object.keys(validation).indexOf(x) === -1);
+                    if (difference.length > 0) {
+                        errorMessages = errorMessages.concat(
+                            this.getErrorMessage(
+                                'disallowExtraFields',
+                                'default',
+                                `Should not contain extra fields (${difference.join(', ')})`
+                            )
+                        );
+                    }
+                }
+
+                // Only performs validation of this constraint once
+                delete validation.disallowExtraFields;
+            }
+
             for (const key of Object.keys(validation)) {
                 const paramValidation = RequestValidator.buildValidationParam(validation[key]);
                 if (paramValidation) {
