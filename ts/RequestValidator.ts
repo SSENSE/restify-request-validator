@@ -96,6 +96,9 @@ export class RequestValidator {
         // Add "min" param
         if (validation.hasOwnProperty('min') && typeof validation.min === 'number') {
             paramValidation.min = validation.min;
+        } else if (paramValidation.type === 'boolean') {
+            // ParamValidation has a default "min" of 1, which we don't want if we are validating an boolean
+            paramValidation.min = 0;
         }
 
         // Add "max" param
@@ -264,7 +267,7 @@ export class RequestValidator {
             }
             return isNumeric;
         } else if (typeValidation.type === 'boolean') {
-            return ['0', '1', 'false', 'true', false, true].indexOf(typeValidation.value) !== -1;
+            return ['0', '1', 'false', 'true', false, true, 0, 1].indexOf(typeValidation.value) !== -1;
         } else if (typeValidation.type === 'date') {
             if (typeof typeValidation.value === 'object' && typeof typeValidation.value.getTime === 'function') {
                 return true;

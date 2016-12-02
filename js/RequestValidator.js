@@ -68,6 +68,9 @@ var RequestValidator = (function () {
         if (validation.hasOwnProperty('min') && typeof validation.min === 'number') {
             paramValidation.min = validation.min;
         }
+        else if (paramValidation.type === 'boolean') {
+            paramValidation.min = 0;
+        }
         if (validation.hasOwnProperty('max') && typeof validation.max === 'number') {
             paramValidation.max = validation.max;
         }
@@ -170,7 +173,7 @@ var RequestValidator = (function () {
             return isNumeric;
         }
         else if (typeValidation.type === 'boolean') {
-            return ['0', '1', 'false', 'true', false, true].indexOf(typeValidation.value) !== -1;
+            return ['0', '1', 'false', 'true', false, true, 0, 1].indexOf(typeValidation.value) !== -1;
         }
         else if (typeValidation.type === 'date') {
             if (typeof typeValidation.value === 'object' && typeof typeValidation.value.getTime === 'function') {
