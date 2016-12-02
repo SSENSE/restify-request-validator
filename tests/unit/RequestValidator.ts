@@ -414,6 +414,21 @@ describe('RequestValidator', () => {
             },
             null, test
         );
+
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        body: {
+                            enabled: {type: 'boolean', required: true}
+                        }
+                    }
+                }, params: {
+                    enabled: 0
+                }
+            },
+            null, test
+        );
     });
 
     it('RequestValidator with failOnFirstError=false', () => {

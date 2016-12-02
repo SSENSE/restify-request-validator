@@ -96,6 +96,9 @@ export class RequestValidator {
         // Add "min" param
         if (validation.hasOwnProperty('min') && typeof validation.min === 'number') {
             paramValidation.min = validation.min;
+        } else if (paramValidation.type === 'boolean') {
+            // ParamValidation has a default "min" of 1, which we don't want if we are validating an boolean
+            paramValidation.min = 0;
         }
 
         // Add "max" param

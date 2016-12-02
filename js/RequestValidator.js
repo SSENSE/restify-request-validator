@@ -68,6 +68,9 @@ var RequestValidator = (function () {
         if (validation.hasOwnProperty('min') && typeof validation.min === 'number') {
             paramValidation.min = validation.min;
         }
+        else if (paramValidation.type === 'boolean') {
+            paramValidation.min = 0;
+        }
         if (validation.hasOwnProperty('max') && typeof validation.max === 'number') {
             paramValidation.max = validation.max;
         }
