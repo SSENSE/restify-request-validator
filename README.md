@@ -121,6 +121,19 @@ validation: {
 }
 ```
 
+If you need to constrain the payload of the `url`, `query`, or `body` to the properties being validated, a parameter **disallowExtraFields** can be defined with the following syntax:
+
+```js
+validation: {
+    <url/query/body>: {
+        <property_name>: {
+            // regular property validation as shown in the example above
+        },
+        disallowExtraFields: true|false // optional, default false, determines if the payload sent on the <url/query/body> should allow fields which are not present on the validation object
+    }
+}
+```
+
 #### Formatting data
 
 ##### Auto formatting
@@ -244,6 +257,7 @@ npm run compile
 
 * **Rémy Jeancolas** - *Initial work* - [RemyJeancolas](https://github.com/RemyJeancolas)
 * **Mickael Burguet** - *Add `disableFailOnFirstError` behavior* - [rundef](https://github.com/rundef)
+* **Darlinton Prauchner** - *Add `disallowExtraFields` constraint* - [DarlintonPrauchner](https://github.com/DarlintonPrauchner)
 
 ## License
 
