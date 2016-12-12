@@ -11,6 +11,7 @@ interface TypeValidation {
 
 interface ErrorMessage {
     message: string;
+    constraint: string;
     isCustom: boolean;
 }
 
@@ -31,11 +32,13 @@ export class RequestValidator {
         if (this.customErrorMessages.hasOwnProperty(field) && this.customErrorMessages[field].hasOwnProperty(errorType)) {
             return {
                 message: this.customErrorMessages[field][errorType],
+                constraint: errorType,
                 isCustom: true
             };
         }
         return {
             message: defaultMessage,
+            constraint: errorType,
             isCustom: false
         };
     }
@@ -131,6 +134,11 @@ export class RequestValidator {
             paramValidation.format = validation.format;
         }
 
+        // Add "terminal" param
+        if (validation.hasOwnProperty('terminal') && (typeof validation.terminal === 'boolean' || validation.terminal instanceof Array)) {
+            paramValidation.terminal = validation.terminal;
+        }
+
         return paramValidation;
     }
 
@@ -157,27 +165,25 @@ export class RequestValidator {
                 delete validation.disallowExtraFields;
             }
 
-            for (const key of Object.keys(validation)) {
+            for (const key of this.getPrioritizedValidationKeys(validation)) {
                 const paramValidation = RequestValidator.buildValidationParam(validation[key]);
                 if (paramValidation) {
-                    // Check "required" param
                     const type = input ? typeof input[key] : undefined;
-                    if (paramValidation.required === true && (!input || type === 'undefined')) {
-                        errorMessages = errorMessages.concat(
-                            this.getErrorMessage(key, 'required', `Param ${key} is required`)
-                        );
-                        continue;
+
+                    // Parse array from url (comma separated string)
+                    if (type === 'string' && inUrl && paramValidation.type === 'array') {
+                        input[key] = input[key].split(',');
                     }
 
-                    if (input) {
-                        // Parse array from url (comma separated string)
-                        if (type === 'string' && inUrl && paramValidation.type === 'array') {
-                            input[key] = input[key].split(',');
-                        }
-
-                        errorMessages = errorMessages.concat(this.validateField(input, key, type, paramValidation));
-                        if (this.failOnFirstError && errorMessages.length) {
+                    errorMessages = errorMessages.concat(this.validateField(input, key, type, paramValidation));
+                    if (errorMessages.length) {
+                        if (this.failOnFirstError || paramValidation.terminal === true) {
                             break;
+                        }
+                        if (paramValidation.terminal instanceof Array) {
+                            if (errorMessages.every((error: ErrorMessage) => paramValidation.terminal.indexOf(error.constraint) !== -1)) {
+                                break;
+                            }
                         }
                     }
                 }
@@ -190,69 +196,105 @@ export class RequestValidator {
     }
 
     private validateField(input: any, key: any, type: any, paramValidation: any): ErrorMessage[] {
-        const errorMessages: ErrorMessage[] = [];
+        let errorMessages: ErrorMessage[] = [];
 
-        // Check type
-        const typeValidation = {value: input[key], type: paramValidation.type};
-        if (RequestValidator.checkType(typeValidation) !== true) {
+        // Check if field was informed
+        if (paramValidation.required === true && (!input || type === 'undefined')) {
             errorMessages.push(
-                this.getErrorMessage(key, 'type', `Param ${key} has invalid type (${paramValidation.type})`)
+                this.getErrorMessage(key, 'required', `Param ${key} is required`)
             );
         }
 
-        if (typeValidation.value !== undefined) {
-            input[key] = typeValidation.value;
+        if (input) {
+            // Check type
+            const typeValidation = {value: input[key], type: paramValidation.type};
+            if (RequestValidator.checkType(typeValidation) !== true) {
+                errorMessages.push(
+                    this.getErrorMessage(key, 'type', `Param ${key} has invalid type (${paramValidation.type})`)
+                );
+            }
+
+            if (typeValidation.value !== undefined) {
+                input[key] = typeValidation.value;
+            }
+
+            // Check array content if needed
+            if (input[key] instanceof Array
+                && RequestValidator.checkArrayType(input[key], paramValidation.arrayType) !== true) {
+                errorMessages.push(
+                    this.getErrorMessage(key, 'arrayType', `Param ${key} has invalid content type (${paramValidation.arrayType}[])`)
+                );
+            }
+
+            // Check length
+            if (RequestValidator.checkLength(input[key], paramValidation.length) !== true) {
+                errorMessages.push(
+                    this.getErrorMessage(key, 'length', `Param ${key} must have a length of ${paramValidation.length}`)
+                );
+            }
+
+            // Check min
+            if (RequestValidator.checkMin(input[key], paramValidation.min) !== true) {
+                errorMessages.push(
+                    this.getErrorMessage(key, 'min', `Param ${key} must have a minimum length of ${paramValidation.min}`)
+                );
+            }
+
+            // Check max
+            if (RequestValidator.checkMax(input[key], paramValidation.max) !== true) {
+                errorMessages.push(
+                    this.getErrorMessage(key, 'max', `Param ${key} must have a maximum length of ${paramValidation.max}`)
+                );
+            }
+
+            // Check values
+            if (RequestValidator.checkValues(input[key], paramValidation.values) !== true) {
+                errorMessages.push(
+                    this.getErrorMessage(key, 'values', `Param ${key} must belong to [${paramValidation.values.toString()}]`)
+                );
+            }
+
+            // Check regex
+            if (input[key] !== undefined && paramValidation.regex && !paramValidation.regex.test(input[key])) {
+                errorMessages.push(
+                    this.getErrorMessage(key, 'regex', `Param ${key} must match regex ${paramValidation.regex}`)
+                );
+            }
+
+            // Apply format
+            if (paramValidation.format && input[key] !== undefined) {
+                input[key] = paramValidation.format(input[key]);
+            }
         }
 
-        // Check array content if needed
-        if (input[key] instanceof Array
-            && RequestValidator.checkArrayType(input[key], paramValidation.arrayType) !== true) {
-            errorMessages.push(
-                this.getErrorMessage(key, 'arrayType', `Param ${key} has invalid content type (${paramValidation.arrayType}[])`)
-            );
-        }
-
-        // Check length
-        if (RequestValidator.checkLength(input[key], paramValidation.length) !== true) {
-            errorMessages.push(
-                this.getErrorMessage(key, 'length', `Param ${key} must have a length of ${paramValidation.length}`)
-            );
-        }
-
-        // Check min
-        if (RequestValidator.checkMin(input[key], paramValidation.min) !== true) {
-            errorMessages.push(
-                this.getErrorMessage(key, 'min', `Param ${key} must have a minimum length of ${paramValidation.min}`)
-            );
-        }
-
-        // Check max
-        if (RequestValidator.checkMax(input[key], paramValidation.max) !== true) {
-            errorMessages.push(
-                this.getErrorMessage(key, 'max', `Param ${key} must have a maximum length of ${paramValidation.max}`)
-            );
-        }
-
-        // Check values
-        if (RequestValidator.checkValues(input[key], paramValidation.values) !== true) {
-            errorMessages.push(
-                this.getErrorMessage(key, 'values', `Param ${key} must belong to [${paramValidation.values.toString()}]`)
-            );
-        }
-
-        // Check regex
-        if (input[key] !== undefined && paramValidation.regex && !paramValidation.regex.test(input[key])) {
-            errorMessages.push(
-                this.getErrorMessage(key, 'regex', `Param ${key} must match regex ${paramValidation.regex}`)
-            );
-        }
-
-        // Apply format
-        if (paramValidation.format && input[key] !== undefined) {
-            input[key] = paramValidation.format(input[key]);
+        // If terminal errors happened on defined constraints, they should be the only returned
+        if (paramValidation.terminal instanceof Array && errorMessages.length > 0) {
+            const terminalErrors: ErrorMessage[] = [];
+            errorMessages.forEach((error: ErrorMessage, index: number) => {
+                if (paramValidation.terminal.indexOf(error.constraint) !== -1) {
+                    terminalErrors.push(errorMessages[index]);
+                }
+            });
+            if (terminalErrors.length) {
+                errorMessages = terminalErrors;
+            }
         }
 
         return errorMessages;
+    }
+
+    private getPrioritizedValidationKeys(validation: any): string[] {
+        // Allows to determine an order on which the validation should happen (which fields first)
+        return Object.keys(validation).sort((a: any, b: any) => {
+            if (validation[a].terminal && validation[a].terminal !== false) {
+                return -1;
+            }
+            if (validation[b].terminal && validation[b].terminal !== false) {
+                return 1;
+            }
+
+            return 0;
+        });
     }
 
     private static checkType(typeValidation: TypeValidation): boolean {
