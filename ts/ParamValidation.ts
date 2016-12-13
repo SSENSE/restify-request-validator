@@ -8,4 +8,5 @@ export class ParamValidation {
     public values: any[] = null; // tslint:disable-line:no-any
     public regex: RegExp = null;
     public format: <T>(data: T) => T;
+    public terminal: any = false;
 }

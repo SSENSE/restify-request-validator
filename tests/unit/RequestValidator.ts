@@ -459,6 +459,124 @@ describe('RequestValidator', () => {
         );
     });
 
+    it('RequestValidator with terminal=true', () => {
+        validator.disableFailOnFirstError();
+
+        expected = 'Query: Param name is required';
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            id: {type: 'numeric', required: true, length: 3},
+                            name: {type: 'string', required: true, length: 4, terminal: true},
+                            description: {type: 'string', required: true, length: 3}
+                        }
+                    }
+                }, query: {
+                    id: 'bc',
+                    description: '-'
+                }
+            },
+            null, test
+        );
+    });
+
+    it('RequestValidator with terminal=[given constraints]', () => {
+        validator.disableFailOnFirstError();
+
+        expected = 'Query: Param description has invalid type (numeric)\n' +
+            'Query: Param description must have a length of 3';
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            id: {type: 'numeric', required: true, length: 3},
+                            name: {type: 'string', required: true, length: 4},
+                            description: {type: 'numeric', required: true, length: 3, terminal: ['type', 'length']}
+                        }
+                    }
+                }, query: {
+                    id: 'bc',
+                    description: '--'
+                }
+            },
+            null, test
+        );
+    });
+
+    it('RequestValidator with terminal=[given constraints on multiple fields]', () => {
+        validator.disableFailOnFirstError();
+
+        expected = 'Query: Param description has invalid type (numeric)\n' +
+            'Query: Param description must have a length of 3';
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            id: {type: 'numeric', required: true, length: 3, terminal: true},
+                            name: {type: 'string', required: true, length: 4},
+                            description: {type: 'numeric', required: true, length: 3, terminal: ['type', 'length']}
+                        }
+                    }
+                }, query: {
+                    id: 123,
+                    description: '--'
+                }
+            },
+            null, test
+        );
+    });
+
+    it('RequestValidator with terminal=[given constraints on multiple fields] first terminal executed', () => {
+        validator.disableFailOnFirstError();
+
+        expected = 'Query: Param id is required';
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            id: {type: 'numeric', required: true, length: 3, terminal: true},
+                            name: {type: 'string', required: true, length: 4},
+                            description: {type: 'numeric', required: true, length: 3, terminal: ['type', 'length']}
+                        }
+                    }
+                }, query: {
+                    description: '--'
+                }
+            },
+            null, test
+        );
+    });
+
+    it('RequestValidator with terminal=[given constraints] no terminal error', () => {
+        validator.disableFailOnFirstError();
+
+        expected = 'Query: Param id must have a minimum length of 1000\n' +
+            'Query: Param name must have a length of 4';
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            id: {type: 'numeric', required: true, length: 3, min: 1000, terminal: ['type', 'length']},
+                            name: {type: 'string', required: true, length: 4},
+                            description: {type: 'numeric', required: true, length: 3}
+                        }
+                    }
+                }, query: {
+                    id: '123',
+                    name: 'abc',
+                    description: '1234'
+                }
+            },
+            null, test
+        );
+    });
+
     describe('Disallow extra fields', () => {
         it('Should not allow extra fields (body)', () => {
             expected = 'Body: Should not contain extra fields (forbiddenOther, forbiddenAnother)';

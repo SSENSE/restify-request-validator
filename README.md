@@ -115,6 +115,7 @@ validation: {
             arrayType: 'valid type', // optional, default null, only works if 'type' property is 'array', check if the array content has valid types, supported types: 'string', 'number', 'boolean', 'numeric'
             values: ['value1', 'value2'], // optional, default null, validates that parameter value belongs to the provided list, if 'type' is 'array', validates every array element
             regex: /^Valid regex$/, // optional, default null, validates parameter value against provided regex
+            terminal: true|false|['type', 'required', 'and so on...'] // optional, default false, when defined as 'true' or array of constraints, returns only error messages associated with this property_name and defined rules 
             format: function(data): data // Function to transform input after validation, see below for more detail
         }
     }
@@ -228,6 +229,8 @@ const validator = new RequestValidator();
 validator.disableFailOnFirstError();
 server.use(validator.validate.bind(validator));
 ```
+
+It is still possible to determine which errors should be returned individually when `disableFailOnFirstError` is activated. In order to do so, one should define the parameter `terminal` on each property being validated.
 
 ## Development
 

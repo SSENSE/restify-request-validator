@@ -8,6 +8,7 @@ var ParamValidation = (function () {
         this.arrayType = null;
         this.values = null;
         this.regex = null;
+        this.terminal = false;
     }
     return ParamValidation;
 }());
