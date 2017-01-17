@@ -199,7 +199,7 @@ export class RequestValidator {
         let errorMessages: ErrorMessage[] = [];
 
         // Check if field was informed
-        if (paramValidation.required === true && (!input || type === 'undefined')) {
+        if (paramValidation.required === true && ((!input || type === 'undefined') || input[key] === null)) {
             errorMessages.push(
                 this.getErrorMessage(key, 'required', `Param ${key} is required`)
             );
@@ -303,7 +303,7 @@ export class RequestValidator {
     private static checkType(typeValidation: TypeValidation): boolean {
         const inputType = typeof typeValidation.value;
 
-        if (inputType === 'undefined') {
+        if (inputType === 'undefined' || typeValidation.value === null) {
             return true;
         } else if (typeValidation.type === 'numeric' || typeValidation.type === 'number') {
             const isNumeric = !isNaN(typeValidation.value);
