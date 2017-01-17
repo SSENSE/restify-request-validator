@@ -206,17 +206,6 @@ describe('RequestValidator', () => {
         );
 
         expected = undefined;
-        const req: any = {
-            route: {
-                validation: {
-                    body: {
-                        id: {type: 'number', required: false, min: 0}
-                    }
-                }
-            }, params: {
-                id: null
-            }
-        };
         validator.validate(
             {
                 route: {
@@ -228,7 +217,8 @@ describe('RequestValidator', () => {
                 }, params: {
                     id: null
                 }
-            }, null, test
+            },
+            null, test
         );
     });
 
