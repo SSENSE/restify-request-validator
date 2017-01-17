@@ -1,5 +1,5 @@
 "use strict";
-var ParamValidation_1 = require('./ParamValidation');
+var ParamValidation_1 = require("./ParamValidation");
 var supportedTypes = ['string', 'number', 'boolean', 'numeric', 'date', 'array', 'object'];
 var supportedArrayTypes = ['string', 'number', 'boolean', 'numeric'];
 var RequestValidator = (function () {
@@ -108,7 +108,7 @@ var RequestValidator = (function () {
                 }
                 delete validation.disallowExtraFields;
             }
-            var _loop_1 = function(key) {
+            var _loop_1 = function (key) {
                 var paramValidation = RequestValidator.buildValidationParam(validation[key]);
                 if (paramValidation) {
                     var type = input ? typeof input[key] : undefined;
@@ -132,7 +132,8 @@ var RequestValidator = (function () {
             for (var _i = 0, _a = this.getPrioritizedValidationKeys(validation); _i < _a.length; _i++) {
                 var key = _a[_i];
                 var state_1 = _loop_1(key);
-                if (state_1 === "break") break;
+                if (state_1 === "break")
+                    break;
             }
             return errorMessages;
         }
@@ -158,8 +159,10 @@ var RequestValidator = (function () {
             if (RequestValidator.checkLength(input[key], paramValidation.length) !== true) {
                 errorMessages.push(this.getErrorMessage(key, 'length', "Param " + key + " must have a length of " + paramValidation.length));
             }
-            if (RequestValidator.checkMin(input[key], paramValidation.min) !== true) {
-                errorMessages.push(this.getErrorMessage(key, 'min', "Param " + key + " must have a minimum length of " + paramValidation.min));
+            if (paramValidation.min !== 0 && input[key] !== null) {
+                if (RequestValidator.checkMin(input[key], paramValidation.min) !== true) {
+                    errorMessages.push(this.getErrorMessage(key, 'min', "Param " + key + " must have a minimum length of " + paramValidation.min));
+                }
             }
             if (RequestValidator.checkMax(input[key], paramValidation.max) !== true) {
                 errorMessages.push(this.getErrorMessage(key, 'max', "Param " + key + " must have a maximum length of " + paramValidation.max));
@@ -203,7 +206,7 @@ var RequestValidator = (function () {
         if (inputType === 'undefined') {
             return true;
         }
-        else if (typeValidation.type === 'numeric') {
+        else if (typeValidation.type === 'numeric' || typeValidation.type === 'number') {
             var isNumeric = !isNaN(typeValidation.value);
             if (isNumeric === true) {
                 typeValidation.value = parseInt(typeValidation.value, 10);
