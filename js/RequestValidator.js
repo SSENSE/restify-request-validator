@@ -141,7 +141,7 @@ var RequestValidator = (function () {
     };
     RequestValidator.prototype.validateField = function (input, key, type, paramValidation) {
         var errorMessages = [];
-        if (paramValidation.required === true && (!input || type === 'undefined')) {
+        if (paramValidation.required === true && ((!input || type === 'undefined') || input[key] === null)) {
             errorMessages.push(this.getErrorMessage(key, 'required', "Param " + key + " is required"));
         }
         if (input) {
@@ -203,7 +203,7 @@ var RequestValidator = (function () {
     };
     RequestValidator.checkType = function (typeValidation) {
         var inputType = typeof typeValidation.value;
-        if (inputType === 'undefined') {
+        if (inputType === 'undefined' || typeValidation.value === null) {
             return true;
         }
         else if (typeValidation.type === 'numeric' || typeValidation.type === 'number') {

@@ -204,7 +204,9 @@ describe('RequestValidator', () => {
             },
             null, test
         );
+    });
 
+    it('RequestValidator::validate() null values', () => {
         expected = undefined;
         validator.validate(
             {
@@ -216,6 +218,38 @@ describe('RequestValidator', () => {
                     }
                 }, params: {
                     id: null
+                }
+            },
+            null, test
+        );
+
+        expected = undefined;
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        body: {
+                            comments: {type: 'string', required: false}
+                        }
+                    }
+                }, params: {
+                    comments: null
+                }
+            },
+            null, test
+        );
+
+        expected = 'Body: Param comments is required';
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        body: {
+                            comments: {type: 'string', required: true}
+                        }
+                    }
+                }, params: {
+                   comments: null
                 }
             },
             null, test
