@@ -234,10 +234,13 @@ export class RequestValidator {
             }
 
             // Check min
-            if (RequestValidator.checkMin(input[key], paramValidation.min) !== true) {
-                errorMessages.push(
-                    this.getErrorMessage(key, 'min', `Param ${key} must have a minimum length of ${paramValidation.min}`)
-                );
+            // Pass if min=0 and value==null
+            if (paramValidation.min !== 0 && input[key] !== null) {
+                if (RequestValidator.checkMin(input[key], paramValidation.min) !== true) {
+                    errorMessages.push(
+                        this.getErrorMessage(key, 'min', `Param ${key} must have a minimum length of ${paramValidation.min}`)
+                    );
+                }
             }
 
             // Check max
@@ -302,7 +305,7 @@ export class RequestValidator {
 
         if (inputType === 'undefined') {
             return true;
-        } else if (typeValidation.type === 'numeric') {
+        } else if (typeValidation.type === 'numeric' || typeValidation.type === 'number') {
             const isNumeric = !isNaN(typeValidation.value);
             if (isNumeric === true) {
                 typeValidation.value = parseInt(typeValidation.value, 10);

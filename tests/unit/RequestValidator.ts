@@ -190,6 +190,48 @@ describe('RequestValidator', () => {
         });
     });
 
+    it('RequestValidator::validate() number', () => {
+        expected = undefined;
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            id: {type: 'number', required: false}
+                        }
+                    }
+                }, query: {}
+            },
+            null, test
+        );
+
+        expected = undefined;
+        const req: any = {
+            route: {
+                validation: {
+                    body: {
+                        id: {type: 'number', required: false, min: 0}
+                    }
+                }
+            }, params: {
+                id: null
+            }
+        };
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        body: {
+                            id: {type: 'number', required: false, min: 0}
+                        }
+                    }
+                }, params: {
+                    id: null
+                }
+            }, null, test
+        );
+    });
+
     it('RequestValidator::validate() min', () => {
         expected = 'Query: Param id must have a minimum length of 2';
         validator.validate(
