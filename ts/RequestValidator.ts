@@ -172,7 +172,10 @@ export class RequestValidator {
 
                     // Parse array from url (comma separated string)
                     if (type === 'string' && inUrl && paramValidation.type === 'array') {
-                        input[key] = input[key].split(',');
+                        input[key] = input[key].split(',').filter((element: string) => element.length > 0);
+                        if (input[key].length === 0) {
+                            input[key] = null;
+                        }
                     }
 
                     errorMessages = errorMessages.concat(this.validateField(input, key, type, paramValidation));

@@ -113,7 +113,10 @@ var RequestValidator = (function () {
                 if (paramValidation) {
                     var type = input ? typeof input[key] : undefined;
                     if (type === 'string' && inUrl && paramValidation.type === 'array') {
-                        input[key] = input[key].split(',');
+                        input[key] = input[key].split(',').filter(function (element) { return element.length > 0; });
+                        if (input[key].length === 0) {
+                            input[key] = null;
+                        }
                     }
                     errorMessages = errorMessages.concat(this_1.validateField(input, key, type, paramValidation));
                     if (errorMessages.length) {

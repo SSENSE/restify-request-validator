@@ -256,6 +256,24 @@ describe('RequestValidator', () => {
         );
     });
 
+    it('RequestValidator::validate() array in query with empty value', () => {
+        expected = 'Query: Param category_id is required';
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            category_id: {type: 'array', arrayType: 'numeric', required: true}
+                        }
+                    }
+                }, query: {
+                    category_id: ''
+                }
+            },
+            null, test
+        );
+    });
+
     it('RequestValidator::validate() min', () => {
         expected = 'Query: Param id must have a minimum length of 2';
         validator.validate(
