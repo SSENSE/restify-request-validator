@@ -76,6 +76,22 @@ describe('RequestValidator', () => {
             null, test
         );
 
+        expected = 'Url: Param foo has invalid type (boolean)';
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        url: {
+                            foo: {type: 'boolean'}
+                        }
+                    }
+                }, params: {
+                    foo: 'bar'
+                }
+            },
+            null, test
+        );
+
         expected = undefined;
         validator.validate(
             {

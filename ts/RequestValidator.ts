@@ -315,7 +315,11 @@ export class RequestValidator {
             }
             return isNumeric;
         } else if (typeValidation.type === 'boolean') {
-            return ['0', '1', 'false', 'true', false, true, 0, 1].indexOf(typeValidation.value) !== -1;
+            const isBoolean = ['0', '1', 'false', 'true', false, true, 0, 1].indexOf(typeValidation.value) !== -1;
+            if (isBoolean === true) {
+                typeValidation.value = ['1', 'true', true, 1].indexOf(typeValidation.value) !== -1;
+            }
+            return isBoolean;
         } else if (typeValidation.type === 'date') {
             if (typeof typeValidation.value === 'object' && typeof typeValidation.value.getTime === 'function') {
                 return true;
