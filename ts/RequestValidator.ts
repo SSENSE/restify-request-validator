@@ -308,8 +308,14 @@ export class RequestValidator {
 
         if (inputType === 'undefined' || typeValidation.value === null) {
             return true;
-        } else if (typeValidation.type === 'numeric' || typeValidation.type === 'number') {
-            const isNumeric = !isNaN(typeValidation.value);
+        } else if (typeValidation.type === 'numeric') {
+            const isNumeric = !(typeValidation.value.length === 0) && !isNaN(typeValidation.value) ;
+            if (isNumeric === true) {
+                typeValidation.value = parseInt(typeValidation.value, 10);
+            }
+            return isNumeric;
+        } else if (typeValidation.type === 'number') {
+            const isNumeric = !isNaN(typeValidation.value) ;
             if (isNumeric === true) {
                 typeValidation.value = parseInt(typeValidation.value, 10);
             }
