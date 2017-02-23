@@ -139,7 +139,7 @@ validation: {
 
 ##### Auto formatting
 
-By default, every `numeric` and `date` inputs will be automatically transformed respectively to valid `number` and `Date` objects after validation. So you can directly use valid objects in your code.
+By default, every `numeric`, `date` and `boolean` inputs will be automatically transformed respectively to valid `number`, `Date` and `boolean` objects after validation. So you can directly use valid objects in your code.
 
 ##### Extra formatting, data transformation
 

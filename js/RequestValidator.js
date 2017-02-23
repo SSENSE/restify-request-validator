@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var ParamValidation_1 = require("./ParamValidation");
 var supportedTypes = ['string', 'number', 'boolean', 'numeric', 'date', 'array', 'object'];
 var supportedArrayTypes = ['string', 'number', 'boolean', 'numeric'];
@@ -209,7 +210,14 @@ var RequestValidator = (function () {
         if (inputType === 'undefined' || typeValidation.value === null) {
             return true;
         }
-        else if (typeValidation.type === 'numeric' || typeValidation.type === 'number') {
+        else if (typeValidation.type === 'numeric') {
+            var isNumeric = !(typeValidation.value.length === 0) && !isNaN(typeValidation.value);
+            if (isNumeric === true) {
+                typeValidation.value = parseInt(typeValidation.value, 10);
+            }
+            return isNumeric;
+        }
+        else if (typeValidation.type === 'number') {
             var isNumeric = !isNaN(typeValidation.value);
             if (isNumeric === true) {
                 typeValidation.value = parseInt(typeValidation.value, 10);
@@ -217,7 +225,11 @@ var RequestValidator = (function () {
             return isNumeric;
         }
         else if (typeValidation.type === 'boolean') {
-            return ['0', '1', 'false', 'true', false, true, 0, 1].indexOf(typeValidation.value) !== -1;
+            var isBoolean = ['0', '1', 'false', 'true', false, true, 0, 1].indexOf(typeValidation.value) !== -1;
+            if (isBoolean === true) {
+                typeValidation.value = ['1', 'true', true, 1].indexOf(typeValidation.value) !== -1;
+            }
+            return isBoolean;
         }
         else if (typeValidation.type === 'date') {
             if (typeof typeValidation.value === 'object' && typeof typeValidation.value.getTime === 'function') {

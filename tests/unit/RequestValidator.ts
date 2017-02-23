@@ -222,6 +222,35 @@ describe('RequestValidator', () => {
         );
     });
 
+    it('RequestValidator::validate() numeric', () => {
+        expected = undefined;
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            id: {type: 'numeric', required: false}
+                        }
+                    }
+                }, query: {id: '1'}
+            },
+            null, test
+        );
+        expected = undefined;
+        validator.validate(
+            {
+                route: {
+                    validation: {
+                        query: {
+                            id: {type: 'numeric', required: false, min: 0}
+                        }
+                    }
+                }, query: {id: '0'}
+            },
+            null, test
+        );
+    });
+
     it('RequestValidator::validate() null values', () => {
         expected = undefined;
         validator.validate(
